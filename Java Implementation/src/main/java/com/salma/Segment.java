@@ -3,8 +3,8 @@ import java.util.Set;
 import java.util.HashSet; 
 
 public class Segment implements Comparable<Segment> {
-    public int b;
-    public int e;
+    public final int b;
+    public final int e;
 
     public Segment(int x, int y){
         this.b = x;

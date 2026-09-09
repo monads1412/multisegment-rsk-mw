@@ -1,0 +1,2303 @@
+\batchmode %% Suppresses most terminal output.
+\documentclass{article}
+\usepackage{color}
+\definecolor{boxshade}{gray}{0.85}
+\setlength{\textwidth}{360pt}
+\setlength{\textheight}{541pt}
+\usepackage{latexsym}
+\usepackage{ifthen}
+% \usepackage{color}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SWITCHES                                                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newboolean{shading} 
+\setboolean{shading}{false}
+\makeatletter
+ %% this is needed only when inserted into the file, not when
+ %% used as a package file.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                           %
+% DEFINITIONS OF SYMBOL-PRODUCING COMMANDS                                  %
+%                                                                           %
+%    TLA+      LaTeX                                                        %
+%    symbol    command                                                      %
+%    ------    -------                                                      %
+%    =>        \implies                                                     %
+%    <:        \ltcolon                                                     %
+%    :>        \colongt                                                     %
+%    ==        \defeq                                                       %
+%    ..        \dotdot                                                      %
+%    ::        \coloncolon                                                  %
+%    =|        \eqdash                                                      %
+%    ++        \pp                                                          %
+%    --        \mm                                                          %
+%    **        \stst                                                        %
+%    //        \slsl                                                        %
+%    ^         \ct                                                          %
+%    \A        \A                                                           %
+%    \E        \E                                                           %
+%    \AA       \AA                                                          %
+%    \EE       \EE                                                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\symlength}
+\newcommand{\implies}{\Rightarrow}
+\newcommand{\ltcolon}{\mathrel{<\!\!\mbox{:}}}
+\newcommand{\colongt}{\mathrel{\!\mbox{:}\!\!>}}
+\newcommand{\defeq}{\;\mathrel{\smash   %% keep this symbol from being too tall
+    {{\stackrel{\scriptscriptstyle\Delta}{=}}}}\;}
+\newcommand{\dotdot}{\mathrel{\ldotp\ldotp}}
+\newcommand{\coloncolon}{\mathrel{::\;}}
+\newcommand{\eqdash}{\mathrel = \joinrel \hspace{-.28em}|}
+\newcommand{\pp}{\mathbin{++}}
+\newcommand{\mm}{\mathbin{--}}
+\newcommand{\stst}{*\!*}
+\newcommand{\slsl}{/\!/}
+\newcommand{\ct}{\hat{\hspace{.4em}}}
+\newcommand{\A}{\forall}
+\newcommand{\E}{\exists}
+\renewcommand{\AA}{\makebox{$\raisebox{.05em}{\makebox[0pt][l]{%
+   $\forall\hspace{-.517em}\forall\hspace{-.517em}\forall$}}%
+   \forall\hspace{-.517em}\forall \hspace{-.517em}\forall\,$}}
+\newcommand{\EE}{\makebox{$\raisebox{.05em}{\makebox[0pt][l]{%
+   $\exists\hspace{-.517em}\exists\hspace{-.517em}\exists$}}%
+   \exists\hspace{-.517em}\exists\hspace{-.517em}\exists\,$}}
+\newcommand{\whileop}{\.{\stackrel
+  {\mbox{\raisebox{-.3em}[0pt][0pt]{$\scriptscriptstyle+\;\,$}}}%
+  {-\hspace{-.16em}\triangleright}}}
+
+% Commands are defined to produce the upper-case keywords.
+% Note that some have space after them.
+\newcommand{\ASSUME}{\textsc{assume }}
+\newcommand{\ASSUMPTION}{\textsc{assumption }}
+\newcommand{\AXIOM}{\textsc{axiom }}
+\newcommand{\BOOLEAN}{\textsc{boolean }}
+\newcommand{\CASE}{\textsc{case }}
+\newcommand{\CONSTANT}{\textsc{constant }}
+\newcommand{\CONSTANTS}{\textsc{constants }}
+\newcommand{\ELSE}{\settowidth{\symlength}{\THEN}%
+   \makebox[\symlength][l]{\textsc{ else}}}
+\newcommand{\EXCEPT}{\textsc{ except }}
+\newcommand{\EXTENDS}{\textsc{extends }}
+\newcommand{\FALSE}{\textsc{false}}
+\newcommand{\IF}{\textsc{if }}
+\newcommand{\IN}{\settowidth{\symlength}{\LET}%
+   \makebox[\symlength][l]{\textsc{in}}}
+\newcommand{\INSTANCE}{\textsc{instance }}
+\newcommand{\LET}{\textsc{let }}
+\newcommand{\LOCAL}{\textsc{local }}
+\newcommand{\MODULE}{\textsc{module }}
+\newcommand{\OTHER}{\textsc{other }}
+\newcommand{\STRING}{\textsc{string}}
+\newcommand{\THEN}{\textsc{ then }}
+\newcommand{\THEOREM}{\textsc{theorem }}
+\newcommand{\LEMMA}{\textsc{lemma }}
+\newcommand{\PROPOSITION}{\textsc{proposition }}
+\newcommand{\COROLLARY}{\textsc{corollary }}
+\newcommand{\TRUE}{\textsc{true}}
+\newcommand{\VARIABLE}{\textsc{variable }}
+\newcommand{\VARIABLES}{\textsc{variables }}
+\newcommand{\WITH}{\textsc{ with }}
+\newcommand{\WF}{\textrm{WF}}
+\newcommand{\SF}{\textrm{SF}}
+\newcommand{\CHOOSE}{\textsc{choose }}
+\newcommand{\ENABLED}{\textsc{enabled }}
+\newcommand{\UNCHANGED}{\textsc{unchanged }}
+\newcommand{\SUBSET}{\textsc{subset }}
+\newcommand{\UNION}{\textsc{union }}
+\newcommand{\DOMAIN}{\textsc{domain }}
+% Added for tla2tex
+\newcommand{\BY}{\textsc{by }}
+\newcommand{\OBVIOUS}{\textsc{obvious }}
+\newcommand{\HAVE}{\textsc{have }}
+\newcommand{\QED}{\textsc{qed }}
+\newcommand{\TAKE}{\textsc{take }}
+\newcommand{\DEF}{\textsc{ def }}
+\newcommand{\HIDE}{\textsc{hide }}
+\newcommand{\RECURSIVE}{\textsc{recursive }}
+\newcommand{\USE}{\textsc{use }}
+\newcommand{\DEFINE}{\textsc{define }}
+\newcommand{\PROOF}{\textsc{proof }}
+\newcommand{\WITNESS}{\textsc{witness }}
+\newcommand{\PICK}{\textsc{pick }}
+\newcommand{\DEFS}{\textsc{defs }}
+\newcommand{\PROVE}{\settowidth{\symlength}{\ASSUME}%
+   \makebox[\symlength][l]{\textsc{prove}}\@s{-4.1}}%
+  %% The \@s{-4.1) is a kludge added on 24 Oct 2009 [happy birthday, Ellen]
+  %% so the correct alignment occurs if the user types
+  %%   ASSUME X
+  %%   PROVE  Y
+  %% because it cancels the extra 4.1 pts added because of the 
+  %% extra space after the PROVE.  This seems to works OK.
+  %% However, the 4.1 equals Parameters.LaTeXLeftSpace(1) and
+  %% should be changed if that method ever changes.
+\newcommand{\SUFFICES}{\textsc{suffices }}
+\newcommand{\NEW}{\textsc{new }}
+\newcommand{\LAMBDA}{\textsc{lambda }}
+\newcommand{\STATE}{\textsc{state }}
+\newcommand{\ACTION}{\textsc{action }}
+\newcommand{\TEMPORAL}{\textsc{temporal }}
+\newcommand{\ONLY}{\textsc{only }}              %% added by LL on 2 Oct 2009
+\newcommand{\OMITTED}{\textsc{omitted }}        %% added by LL on 31 Oct 2009
+\newcommand{\@pfstepnum}[2]{\ensuremath{\langle#1\rangle}\textrm{#2}}
+\newcommand{\bang}{\@s{1}\mbox{\small !}\@s{1}}
+%% We should format || differently in PlusCal code than in TLA+ formulas.
+\newcommand{\p@barbar}{\ifpcalsymbols
+   \,\,\rule[-.25em]{.075em}{1em}\hspace*{.2em}\rule[-.25em]{.075em}{1em}\,\,%
+   \else \,||\,\fi}
+%% PlusCal keywords
+\newcommand{\p@fair}{\textbf{fair }}
+\newcommand{\p@semicolon}{\textbf{\,; }}
+\newcommand{\p@algorithm}{\textbf{algorithm }}
+\newcommand{\p@mmfair}{\textbf{-{}-fair }}
+\newcommand{\p@mmalgorithm}{\textbf{-{}-algorithm }}
+\newcommand{\p@assert}{\textbf{assert }}
+\newcommand{\p@await}{\textbf{await }}
+\newcommand{\p@begin}{\textbf{begin }}
+\newcommand{\p@end}{\textbf{end }}
+\newcommand{\p@call}{\textbf{call }}
+\newcommand{\p@define}{\textbf{define }}
+\newcommand{\p@do}{\textbf{ do }}
+\newcommand{\p@either}{\textbf{either }}
+\newcommand{\p@or}{\textbf{or }}
+\newcommand{\p@goto}{\textbf{goto }}
+\newcommand{\p@if}{\textbf{if }}
+\newcommand{\p@then}{\,\,\textbf{then }}
+\newcommand{\p@else}{\ifcsyntax \textbf{else } \else \,\,\textbf{else }\fi}
+\newcommand{\p@elsif}{\,\,\textbf{elsif }}
+\newcommand{\p@macro}{\textbf{macro }}
+\newcommand{\p@print}{\textbf{print }}
+\newcommand{\p@procedure}{\textbf{procedure }}
+\newcommand{\p@process}{\textbf{process }}
+\newcommand{\p@return}{\textbf{return}}
+\newcommand{\p@skip}{\textbf{skip}}
+\newcommand{\p@variable}{\textbf{variable }}
+\newcommand{\p@variables}{\textbf{variables }}
+\newcommand{\p@while}{\textbf{while }}
+\newcommand{\p@when}{\textbf{when }}
+\newcommand{\p@with}{\textbf{with }}
+\newcommand{\p@lparen}{\textbf{(\,\,}}
+\newcommand{\p@rparen}{\textbf{\,\,) }}   
+\newcommand{\p@lbrace}{\textbf{\{\,\,}}   
+\newcommand{\p@rbrace}{\textbf{\,\,\} }}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% REDEFINE STANDARD COMMANDS TO MAKE THEM FORMAT BETTER %
+%                                                       %
+% We redefine \in and \notin                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\_}{\rule{.4em}{.06em}\hspace{.05em}}
+\newlength{\equalswidth}
+\let\oldin=\in
+\let\oldnotin=\notin
+\renewcommand{\in}{%
+   {\settowidth{\equalswidth}{$\.{=}$}\makebox[\equalswidth][c]{$\oldin$}}}
+\renewcommand{\notin}{%
+   {\settowidth{\equalswidth}{$\.{=}$}\makebox[\equalswidth]{$\oldnotin$}}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                  %
+% HORIZONTAL BARS:                                 %
+%                                                  %
+%   \moduleLeftDash    |~~~~~~~~~~                 %
+%   \moduleRightDash    ~~~~~~~~~~|                %
+%   \midbar            |----------|                %
+%   \bottombar         |__________|                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\charwidth}\settowidth{\charwidth}{{\small\tt M}}
+\newlength{\boxrulewd}\setlength{\boxrulewd}{.4pt}
+\newlength{\boxlineht}\setlength{\boxlineht}{.5\baselineskip}
+\newcommand{\boxsep}{\charwidth}
+\newlength{\boxruleht}\setlength{\boxruleht}{.5ex}
+\newlength{\boxruledp}\setlength{\boxruledp}{-\boxruleht}
+\addtolength{\boxruledp}{\boxrulewd}
+\newcommand{\boxrule}{\leaders\hrule height \boxruleht depth \boxruledp
+                      \hfill\mbox{}}
+\newcommand{\@computerule}{%
+  \setlength{\boxruleht}{.5ex}%
+  \setlength{\boxruledp}{-\boxruleht}%
+  \addtolength{\boxruledp}{\boxrulewd}}
+
+\newcommand{\bottombar}{\hspace{-\boxsep}%
+  \raisebox{-\boxrulewd}[0pt][0pt]{\rule[.5ex]{\boxrulewd}{\boxlineht}}%
+  \boxrule
+  \raisebox{-\boxrulewd}[0pt][0pt]{%
+      \rule[.5ex]{\boxrulewd}{\boxlineht}}\hspace{-\boxsep}\vspace{0pt}}
+
+\newcommand{\moduleLeftDash}%
+   {\hspace*{-\boxsep}%
+     \raisebox{-\boxlineht}[0pt][0pt]{\rule[.5ex]{\boxrulewd
+               }{\boxlineht}}%
+    \boxrule\hspace*{.4em }}
+
+\newcommand{\moduleRightDash}%
+    {\hspace*{.4em}\boxrule
+    \raisebox{-\boxlineht}[0pt][0pt]{\rule[.5ex]{\boxrulewd
+               }{\boxlineht}}\hspace{-\boxsep}}%\vspace{.2em}
+
+\newcommand{\midbar}{\hspace{-\boxsep}\raisebox{-.5\boxlineht}[0pt][0pt]{%
+   \rule[.5ex]{\boxrulewd}{\boxlineht}}\boxrule\raisebox{-.5\boxlineht%
+   }[0pt][0pt]{\rule[.5ex]{\boxrulewd}{\boxlineht}}\hspace{-\boxsep}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FORMATING COMMANDS                                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PLUSCAL SHADING                                                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% The TeX pcalshading switch is set on to cause PlusCal shading to be
+% performed.  This changes the behavior of the following commands and
+% environments to cause full-width shading to be performed on all lines.
+% 
+%   \tstrut \@x cpar mcom \@pvspace
+% 
+% The TeX pcalsymbols switch is turned on when typesetting a PlusCal algorithm,
+% whether or not shading is being performed.  It causes symbols (other than
+% parentheses and braces and PlusCal-only keywords) that should be typeset
+% differently depending on whether they are in an algorithm to be typeset
+% appropriately.  Currently, the only such symbol is "||".
+%
+% The TeX csyntax switch is turned on when typesetting a PlusCal algorithm in
+% c-syntax.  This allows symbols to be format differently in the two syntaxes.
+% The "else" keyword is the only one that is.
+
+\newif\ifpcalshading \pcalshadingfalse
+\newif\ifpcalsymbols \pcalsymbolsfalse
+\newif\ifcsyntax     \csyntaxtrue
+
+% The \@pvspace command makes a vertical space.  It uses \vspace
+% except with \ifpcalshading, in which case it sets \pvcalvspace
+% and the space is added by a following \@x command.
+%
+\newlength{\pcalvspace}\setlength{\pcalvspace}{0pt}%
+\newcommand{\@pvspace}[1]{%
+  \ifpcalshading
+     \par\global\setlength{\pcalvspace}{#1}%
+  \else
+     \par\vspace{#1}%
+  \fi
+}
+
+% The lcom environment was changed to set \lcomindent equal to
+% the indentation it produces.  This length is used by the
+% cpar environment to make shading extend for the full width
+% of the line.  This assumes that lcom environments are not
+% nested.  I hope TLATeX does not nest them.
+%
+\newlength{\lcomindent}%
+\setlength{\lcomindent}{0pt}%
+
+%\tstrut: A strut to produce inter-paragraph space in a comment.
+%\rstrut: A strut to extend the bottom of a one-line comment so
+%         there's no break in the shading between comments on 
+%         successive lines.
+\newcommand\tstrut%
+  {\raisebox{\vshadelen}{\raisebox{-.25em}{\rule{0pt}{1.15em}}}%
+   \global\setlength{\vshadelen}{0pt}}
+\newcommand\rstrut{\raisebox{-.25em}{\rule{0pt}{1.15em}}%
+ \global\setlength{\vshadelen}{0pt}}
+
+
+% \.{op} formats operator op in math mode with empty boxes on either side.
+% Used because TeX otherwise vary the amount of space it leaves around op.
+\renewcommand{\.}[1]{\ensuremath{\mbox{}#1\mbox{}}}
+
+% \@s{n} produces an n-point space
+\newcommand{\@s}[1]{\hspace{#1pt}}           
+
+% \@x{txt} starts a specification line in the beginning with txt
+% in the final LaTeX source.
+\newlength{\@xlen}
+\newcommand\xtstrut%
+  {\setlength{\@xlen}{1.05em}%
+   \addtolength{\@xlen}{\pcalvspace}%
+    \raisebox{\vshadelen}{\raisebox{-.25em}{\rule{0pt}{\@xlen}}}%
+   \global\setlength{\vshadelen}{0pt}%
+   \global\setlength{\pcalvspace}{0pt}}
+
+\newcommand{\@x}[1]{\par
+  \ifpcalshading
+  \makebox[0pt][l]{\shadebox{\xtstrut\hspace*{\textwidth}}}%
+  \fi
+  \mbox{$\mbox{}#1\mbox{}$}}  
+
+% \@xx{txt} continues a specification line with the text txt.
+\newcommand{\@xx}[1]{\mbox{$\mbox{}#1\mbox{}$}}  
+
+% \@y{cmt} produces a one-line comment.
+\newcommand{\@y}[1]{\mbox{\footnotesize\hspace{.65em}%
+  \ifthenelse{\boolean{shading}}{%
+      \shadebox{#1\hspace{-\the\lastskip}\rstrut}}%
+               {#1\hspace{-\the\lastskip}\rstrut}}}
+
+% \@z{cmt} produces a zero-width one-line comment.
+\newcommand{\@z}[1]{\makebox[0pt][l]{\footnotesize
+  \ifthenelse{\boolean{shading}}{%
+      \shadebox{#1\hspace{-\the\lastskip}\rstrut}}%
+               {#1\hspace{-\the\lastskip}\rstrut}}}
+
+
+% \@w{str} produces the TLA+ string "str".
+\newcommand{\@w}[1]{\textsf{``{#1}''}}             
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SHADING                                                                   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\graymargin{1}
+  % The number of points of margin in the shaded box.
+
+% \definecolor{boxshade}{gray}{.85}
+% Defines the darkness of the shading: 1 = white, 0 = black
+% Added by TLATeX only if needed.
+
+% \shadebox{txt} puts txt in a shaded box.
+\newlength{\templena}
+\newlength{\templenb}
+\newsavebox{\tempboxa}
+\newcommand{\shadebox}[1]{{\setlength{\fboxsep}{\graymargin pt}%
+     \savebox{\tempboxa}{#1}%
+     \settoheight{\templena}{\usebox{\tempboxa}}%
+     \settodepth{\templenb}{\usebox{\tempboxa}}%
+     \hspace*{-\fboxsep}\raisebox{0pt}[\templena][\templenb]%
+        {\colorbox{boxshade}{\usebox{\tempboxa}}}\hspace*{-\fboxsep}}}
+
+% \vshade{n} makes an n-point inter-paragraph space, with
+%  shading if the `shading' flag is true.
+\newlength{\vshadelen}
+\setlength{\vshadelen}{0pt}
+\newcommand{\vshade}[1]{\ifthenelse{\boolean{shading}}%
+   {\global\setlength{\vshadelen}{#1pt}}%
+   {\vspace{#1pt}}}
+
+\newlength{\boxwidth}
+\newlength{\multicommentdepth}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE cpar ENVIRONMENT                                                      %
+% ^^^^^^^^^^^^^^^^^^^^                                                      %
+% The LaTeX input                                                           %
+%                                                                           %
+%   \begin{cpar}{pop}{nest}{isLabel}{d}{e}{arg6}                            %
+%     XXXXXXXXXXXXXXX                                                       %
+%     XXXXXXXXXXXXXXX                                                       %
+%     XXXXXXXXXXXXXXX                                                       %
+%   \end{cpar}                                                              %
+%                                                                           %
+% produces one of two possible results.  If isLabel is the letter "T",      %
+% it produces the following, where [label] is the result of typesetting     %
+% arg6 in an LR box, and d is is a number representing a distance in        %
+% points.                                                                   %
+%                                                                           %
+%   prevailing |<-- d -->[label]<- e ->XXXXXXXXXXXXXXX                      %
+%         left |                       XXXXXXXXXXXXXXX                      %
+%       margin |                       XXXXXXXXXXXXXXX                      %
+%                                                                           %
+% If isLabel is the letter "F", then it produces                            %
+%                                                                           %
+%   prevailing |<-- d -->XXXXXXXXXXXXXXXXXXXXXXX                            %
+%         left |         <- e ->XXXXXXXXXXXXXXXX                            %
+%       margin |                XXXXXXXXXXXXXXXX                            %
+%                                                                           %
+% where d and e are numbers representing distances in points.               %
+%                                                                           %
+% The prevailing left margin is the one in effect before the most recent    %
+% pop (argument 1) cpar environments with "T" as the nest argument, where   %
+% pop is a number \geq 0.                                                   %
+%                                                                           %
+% If the nest argument is the letter "T", then the prevailing left          %
+% margin is moved to the left of the second (and following) lines of        %
+% X's.  Otherwise, the prevailing left margin is left unchanged.            %
+%                                                                           %
+% An \unnest{n} command moves the prevailing left margin to where it was    %
+% before the most recent n cpar environments with "T" as the nesting        %
+% argument.                                                                 %
+%                                                                           %
+% The environment leaves no vertical space above or below it, or between    %
+% its paragraphs.  (TLATeX inserts the proper amount of vertical space.)    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcounter{pardepth}
+\setcounter{pardepth}{0}
+
+% \setgmargin{txt} defines \gmarginN to be txt, where N is \roman{pardepth}.
+% \thegmargin equals \gmarginN, where N is \roman{pardepth}.
+\newcommand{\setgmargin}[1]{%
+  \expandafter\xdef\csname gmargin\roman{pardepth}\endcsname{#1}}
+\newcommand{\thegmargin}{\csname gmargin\roman{pardepth}\endcsname}
+\newcommand{\gmargin}{0pt}
+
+\newsavebox{\tempsbox}
+
+\newlength{\@cparht}
+\newlength{\@cpardp}
+\newenvironment{cpar}[6]{%
+  \addtocounter{pardepth}{-#1}%
+  \ifthenelse{\boolean{shading}}{\par\begin{lrbox}{\tempsbox}%
+                                 \begin{minipage}[t]{\linewidth}}{}%
+  \begin{list}{}{%
+     \edef\temp{\thegmargin}
+     \ifthenelse{\equal{#3}{T}}%
+       {\settowidth{\leftmargin}{\hspace{\temp}\footnotesize #6\hspace{#5pt}}%
+        \addtolength{\leftmargin}{#4pt}}%
+       {\setlength{\leftmargin}{#4pt}%
+        \addtolength{\leftmargin}{#5pt}%
+        \addtolength{\leftmargin}{\temp}%
+        \setlength{\itemindent}{-#5pt}}%
+      \ifthenelse{\equal{#2}{T}}{\addtocounter{pardepth}{1}%
+                                 \setgmargin{\the\leftmargin}}{}%
+      \setlength{\labelwidth}{0pt}%
+      \setlength{\labelsep}{0pt}%
+      \setlength{\itemindent}{-\leftmargin}%
+      \setlength{\topsep}{0pt}%
+      \setlength{\parsep}{0pt}%
+      \setlength{\partopsep}{0pt}%
+      \setlength{\parskip}{0pt}%
+      \setlength{\itemsep}{0pt}
+      \setlength{\itemindent}{#4pt}%
+      \addtolength{\itemindent}{-\leftmargin}}%
+   \ifthenelse{\equal{#3}{T}}%
+      {\item[\tstrut\footnotesize \hspace{\temp}{#6}\hspace{#5pt}]
+        }%
+      {\item[\tstrut\hspace{\temp}]%
+         }%
+   \footnotesize}
+ {\hspace{-\the\lastskip}\tstrut
+ \end{list}%
+  \ifthenelse{\boolean{shading}}%
+          {\end{minipage}%
+           \end{lrbox}%
+           \ifpcalshading
+             \setlength{\@cparht}{\ht\tempsbox}%
+             \setlength{\@cpardp}{\dp\tempsbox}%
+             \addtolength{\@cparht}{.15em}%
+             \addtolength{\@cpardp}{.2em}%
+             \addtolength{\@cparht}{\@cpardp}%
+            % I don't know what's going on here.  I want to add a
+            % \pcalvspace high shaded line, but I don't know how to
+            % do it.  A little trial and error shows that the following
+            % does a reasonable job approximating that, eliminating
+            % the line if \pcalvspace is small.
+            \addtolength{\@cparht}{\pcalvspace}%
+             \ifdim \pcalvspace > .8em
+               \addtolength{\pcalvspace}{-.2em}%
+               \hspace*{-\lcomindent}%
+               \shadebox{\rule{0pt}{\pcalvspace}\hspace*{\textwidth}}\par
+               \global\setlength{\pcalvspace}{0pt}%
+               \fi
+             \hspace*{-\lcomindent}%
+             \makebox[0pt][l]{\raisebox{-\@cpardp}[0pt][0pt]{%
+                 \shadebox{\rule{0pt}{\@cparht}\hspace*{\textwidth}}}}%
+             \hspace*{\lcomindent}\usebox{\tempsbox}%
+             \par
+           \else
+             \shadebox{\usebox{\tempsbox}}\par
+           \fi}%
+           {}%
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE ppar ENVIRONMENT                                                       %
+% ^^^^^^^^^^^^^^^^^^^^                                                       %
+% The environment                                                            %
+%                                                                            %
+%   \begin{ppar} ... \end{ppar}                                              %
+%                                                                            %
+% is equivalent to                                                           %
+%                                                                            %
+%   \begin{cpar}{0}{F}{F}{0}{0}{} ... \end{cpar}                             %
+%                                                                            %
+% The environment is put around each line of the output for a PlusCal        %
+% algorithm.                                                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newenvironment{ppar}{%
+%  \ifthenelse{\boolean{shading}}{\par\begin{lrbox}{\tempsbox}%
+%                                 \begin{minipage}[t]{\linewidth}}{}%
+%  \begin{list}{}{%
+%     \edef\temp{\thegmargin}
+%        \setlength{\leftmargin}{0pt}%
+%        \addtolength{\leftmargin}{\temp}%
+%        \setlength{\itemindent}{0pt}%
+%      \setlength{\labelwidth}{0pt}%
+%      \setlength{\labelsep}{0pt}%
+%      \setlength{\itemindent}{-\leftmargin}%
+%      \setlength{\topsep}{0pt}%
+%      \setlength{\parsep}{0pt}%
+%      \setlength{\partopsep}{0pt}%
+%      \setlength{\parskip}{0pt}%
+%      \setlength{\itemsep}{0pt}
+%      \setlength{\itemindent}{0pt}%
+%      \addtolength{\itemindent}{-\leftmargin}}%
+%      \item[\tstrut\hspace{\temp}]}%
+% {\hspace{-\the\lastskip}\tstrut
+% \end{list}%
+%  \ifthenelse{\boolean{shading}}{\end{minipage}  
+%                                 \end{lrbox}%
+%                                 \shadebox{\usebox{\tempsbox}}\par}{}%
+%  }
+
+ %%% TESTING
+ \newcommand{\xtest}[1]{\par
+ \makebox[0pt][l]{\shadebox{\xtstrut\hspace*{\textwidth}}}%
+ \mbox{$\mbox{}#1\mbox{}$}} 
+
+% \newcommand{\xxtest}[1]{\par
+% \makebox[0pt][l]{\shadebox{\xtstrut{#1}\hspace*{\textwidth}}}%
+% \mbox{$\mbox{}#1\mbox{}$}} 
+
+%\newlength{\pcalvspace}
+%\setlength{\pcalvspace}{0pt}
+% \newlength{\xxtestlen}
+% \setlength{\xxtestlen}{0pt}
+% \newcommand\xtstrut%
+%   {\setlength{\xxtestlen}{1.15em}%
+%    \addtolength{\xxtestlen}{\pcalvspace}%
+%     \raisebox{\vshadelen}{\raisebox{-.25em}{\rule{0pt}{\xxtestlen}}}%
+%    \global\setlength{\vshadelen}{0pt}%
+%    \global\setlength{\pcalvspace}{0pt}}
+   
+   %%%% TESTING
+   
+   %% The xcpar environment
+   %%  Note: overloaded use of \pcalvspace for testing.
+   %%
+%   \newlength{\xcparht}%
+%   \newlength{\xcpardp}%
+   
+%   \newenvironment{xcpar}[6]{%
+%  \addtocounter{pardepth}{-#1}%
+%  \ifthenelse{\boolean{shading}}{\par\begin{lrbox}{\tempsbox}%
+%                                 \begin{minipage}[t]{\linewidth}}{}%
+%  \begin{list}{}{%
+%     \edef\temp{\thegmargin}%
+%     \ifthenelse{\equal{#3}{T}}%
+%       {\settowidth{\leftmargin}{\hspace{\temp}\footnotesize #6\hspace{#5pt}}%
+%        \addtolength{\leftmargin}{#4pt}}%
+%       {\setlength{\leftmargin}{#4pt}%
+%        \addtolength{\leftmargin}{#5pt}%
+%        \addtolength{\leftmargin}{\temp}%
+%        \setlength{\itemindent}{-#5pt}}%
+%      \ifthenelse{\equal{#2}{T}}{\addtocounter{pardepth}{1}%
+%                                 \setgmargin{\the\leftmargin}}{}%
+%      \setlength{\labelwidth}{0pt}%
+%      \setlength{\labelsep}{0pt}%
+%      \setlength{\itemindent}{-\leftmargin}%
+%      \setlength{\topsep}{0pt}%
+%      \setlength{\parsep}{0pt}%
+%      \setlength{\partopsep}{0pt}%
+%      \setlength{\parskip}{0pt}%
+%      \setlength{\itemsep}{0pt}%
+%      \setlength{\itemindent}{#4pt}%
+%      \addtolength{\itemindent}{-\leftmargin}}%
+%   \ifthenelse{\equal{#3}{T}}%
+%      {\item[\xtstrut\footnotesize \hspace{\temp}{#6}\hspace{#5pt}]%
+%        }%
+%      {\item[\xtstrut\hspace{\temp}]%
+%         }%
+%   \footnotesize}
+% {\hspace{-\the\lastskip}\tstrut
+% \end{list}%
+%  \ifthenelse{\boolean{shading}}{\end{minipage}  
+%                                 \end{lrbox}%
+%                                 \setlength{\xcparht}{\ht\tempsbox}%
+%                                 \setlength{\xcpardp}{\dp\tempsbox}%
+%                                 \addtolength{\xcparht}{.15em}%
+%                                 \addtolength{\xcpardp}{.2em}%
+%                                 \addtolength{\xcparht}{\xcpardp}%
+%                                 \hspace*{-\lcomindent}%
+%                                 \makebox[0pt][l]{\raisebox{-\xcpardp}[0pt][0pt]{%
+%                                      \shadebox{\rule{0pt}{\xcparht}\hspace*{\textwidth}}}}%
+%                                 \hspace*{\lcomindent}\usebox{\tempsbox}%
+%                                 \par}{}%
+%  }
+%  
+% \newlength{\xmcomlen}
+%\newenvironment{xmcom}[1]{%
+%  \setcounter{pardepth}{0}%
+%  \hspace{.65em}%
+%  \begin{lrbox}{\alignbox}\sloppypar%
+%      \setboolean{shading}{false}%
+%      \setlength{\boxwidth}{#1pt}%
+%      \addtolength{\boxwidth}{-.65em}%
+%      \begin{minipage}[t]{\boxwidth}\footnotesize
+%      \parskip=0pt\relax}%
+%       {\end{minipage}\end{lrbox}%
+%       \setlength{\xmcomlen}{\textwidth}%
+%       \addtolength{\xmcomlen}{-\wd\alignbox}%
+%       \settodepth{\alignwidth}{\usebox{\alignbox}}%
+%       \global\setlength{\multicommentdepth}{\alignwidth}%
+%       \setlength{\boxwidth}{\alignwidth}%
+%       \global\addtolength{\alignwidth}{-\maxdepth}%
+%       \addtolength{\boxwidth}{.1em}%
+%       \raisebox{0pt}[0pt][0pt]{%
+%        \ifthenelse{\boolean{shading}}%
+%          {\hspace*{-\xmcomlen}\shadebox{\rule[-\boxwidth]{0pt}{0pt}%
+%                                 \hspace*{\xmcomlen}\usebox{\alignbox}}}%
+%          {\usebox{\alignbox}}}%
+%       \vspace*{\alignwidth}\pagebreak[0]\vspace{-\alignwidth}\par}
+% % a multi-line comment, whose first argument is its width in points.
+%  
+   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE lcom ENVIRONMENT                                                       %
+% ^^^^^^^^^^^^^^^^^^^^                                                       %
+% A multi-line comment with no text to its left is typeset in an lcom        % 
+% environment, whose argument is a number representing the indentation       % 
+% of the left margin, in points.  All the text of the comment should be      % 
+% inside cpar environments.                                                  % 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment{lcom}[1]{%
+  \setlength{\lcomindent}{#1pt} % Added for PlusCal handling.
+  \par\vspace{.2em}%
+  \sloppypar
+  \setcounter{pardepth}{0}%
+  \footnotesize
+  \begin{list}{}{%
+    \setlength{\leftmargin}{#1pt}
+    \setlength{\labelwidth}{0pt}%
+    \setlength{\labelsep}{0pt}%
+    \setlength{\itemindent}{0pt}%
+    \setlength{\topsep}{0pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\partopsep}{0pt}%
+    \setlength{\parskip}{0pt}}
+    \item[]}%
+  {\end{list}\vspace{.3em}\setlength{\lcomindent}{0pt}%
+ }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE mcom ENVIRONMENT AND \mutivspace COMMAND                              %
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                              %
+%                                                                           %
+% A part of the spec containing a right-comment of the form                 %
+%                                                                           %
+%      xxxx (*************)                                                 %
+%      yyyy (* ccccccccc *)                                                 %
+%      ...  (* ccccccccc *)                                                 %
+%           (* ccccccccc *)                                                 %
+%           (* ccccccccc *)                                                 %
+%           (*************)                                                 %
+%                                                                           %
+% is typeset by                                                             %
+%                                                                           %
+%     XXXX \begin{mcom}{d}                                                  %
+%            CCCC ... CCC                                                   %
+%          \end{mcom}                                                       %
+%     YYYY ...                                                              %
+%     \multivspace{n}                                                       %
+%                                                                           %
+% where the number d is the width in points of the comment, n is the        %
+% number of xxxx, yyyy, ...  lines to the left of the comment.              %
+% All the text of the comment should be typeset in cpar environments.       %
+%                                                                           %
+% This puts the comment into a single box (so no page breaks can occur      %
+% within it).  The entire box is shaded iff the shading flag is true.       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\xmcomlen}%
+\newenvironment{mcom}[1]{%
+  \setcounter{pardepth}{0}%
+  \hspace{.65em}%
+  \begin{lrbox}{\alignbox}\sloppypar%
+      \setboolean{shading}{false}%
+      \setlength{\boxwidth}{#1pt}%
+      \addtolength{\boxwidth}{-.65em}%
+      \begin{minipage}[t]{\boxwidth}\footnotesize
+      \parskip=0pt\relax}%
+       {\end{minipage}\end{lrbox}%
+       \setlength{\xmcomlen}{\textwidth}%       % For PlusCal shading
+       \addtolength{\xmcomlen}{-\wd\alignbox}%  % For PlusCal shading
+       \settodepth{\alignwidth}{\usebox{\alignbox}}%
+       \global\setlength{\multicommentdepth}{\alignwidth}%
+       \setlength{\boxwidth}{\alignwidth}%      % For PlusCal shading
+       \global\addtolength{\alignwidth}{-\maxdepth}%
+       \addtolength{\boxwidth}{.1em}%           % For PlusCal shading
+      \raisebox{0pt}[0pt][0pt]{%
+        \ifthenelse{\boolean{shading}}%
+          {\ifpcalshading
+             \hspace*{-\xmcomlen}%
+             \shadebox{\rule[-\boxwidth]{0pt}{0pt}\hspace*{\xmcomlen}%
+                          \usebox{\alignbox}}%
+           \else
+             \shadebox{\usebox{\alignbox}}
+           \fi
+          }%
+          {\usebox{\alignbox}}}%
+       \vspace*{\alignwidth}\pagebreak[0]\vspace{-\alignwidth}\par}
+ % a multi-line comment, whose first argument is its width in points.
+
+
+% \multispace{n} produces the vertical space indicated by "|"s in 
+% this situation
+%   
+%     xxxx (*************)
+%     xxxx (* ccccccccc *)
+%      |   (* ccccccccc *)
+%      |   (* ccccccccc *)
+%      |   (* ccccccccc *)
+%      |   (*************)
+%
+% where n is the number of "xxxx" lines.
+\newcommand{\multivspace}[1]{\addtolength{\multicommentdepth}{-#1\baselineskip}%
+ \addtolength{\multicommentdepth}{1.2em}%
+ \ifthenelse{\lengthtest{\multicommentdepth > 0pt}}%
+    {\par\vspace{\multicommentdepth}\par}{}}
+
+%\newenvironment{hpar}[2]{%
+%  \begin{list}{}{\setlength{\leftmargin}{#1pt}%
+%                 \addtolength{\leftmargin}{#2pt}%
+%                 \setlength{\itemindent}{-#2pt}%
+%                 \setlength{\topsep}{0pt}%
+%                 \setlength{\parsep}{0pt}%
+%                 \setlength{\partopsep}{0pt}%
+%                 \setlength{\parskip}{0pt}%
+%                 \addtolength{\labelsep}{0pt}}%
+%  \item[]\footnotesize}{\end{list}}
+%    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    % Typesets a sequence of paragraphs like this:                         %
+%    %                                                                      %
+%    %      left |<-- d1 --> XXXXXXXXXXXXXXXXXXXXXXXX                       %
+%    %    margin |           <- d2 -> XXXXXXXXXXXXXXX                       %
+%    %           |                    XXXXXXXXXXXXXXX                       %
+%    %           |                                                          %
+%    %           |                    XXXXXXXXXXXXXXX                       %
+%    %           |                    XXXXXXXXXXXXXXX                       %
+%    %                                                                      %
+%    % where d1 = #1pt and d2 = #2pt, but with no vspace between            %
+%    % paragraphs.                                                          %
+%    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Commands for repeated characters that produce dashes.              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \raisedDash{wd}{ht}{thk} makes a horizontal line wd characters wide, 
+% raised a distance ht ex's above the baseline, with a thickness of 
+% thk em's.
+\newcommand{\raisedDash}[3]{\raisebox{#2ex}{\setlength{\alignwidth}{.5em}%
+  \rule{#1\alignwidth}{#3em}}}
+
+% The following commands take a single argument n and produce the
+% output for n repeated characters, as follows
+%   \cdash:    -
+%   \tdash:    ~
+%   \ceqdash:  =
+%   \usdash:   _
+\newcommand{\cdash}[1]{\raisedDash{#1}{.5}{.04}}
+\newcommand{\usdash}[1]{\raisedDash{#1}{0}{.04}}
+\newcommand{\ceqdash}[1]{\raisedDash{#1}{.5}{.08}}
+\newcommand{\tdash}[1]{\raisedDash{#1}{1}{.08}}
+
+\newlength{\spacewidth}
+\setlength{\spacewidth}{.2em}
+\newcommand{\e}[1]{\hspace{#1\spacewidth}}
+%% \e{i} produces space corresponding to i input spaces.
+
+
+%% Alignment-file Commands
+
+\newlength{\alignboxwidth}
+\newlength{\alignwidth}
+\newsavebox{\alignbox}
+
+% \al{i}{j}{txt} is used in the alignment file to put "%{i}{j}{wd}"
+% in the log file, where wd is the width of the line up to that point,
+% and txt is the following text.
+\newcommand{\al}[3]{%
+  \typeout{\%{#1}{#2}{\the\alignwidth}}%
+  \cl{#3}}
+
+%% \cl{txt} continues a specification line in the alignment file
+%% with text txt.
+\newcommand{\cl}[1]{%
+  \savebox{\alignbox}{\mbox{$\mbox{}#1\mbox{}$}}%
+  \settowidth{\alignboxwidth}{\usebox{\alignbox}}%
+  \addtolength{\alignwidth}{\alignboxwidth}%
+  \usebox{\alignbox}}
+
+% \fl{txt} in the alignment file begins a specification line that
+% starts with the text txt.
+\newcommand{\fl}[1]{%
+  \par
+  \savebox{\alignbox}{\mbox{$\mbox{}#1\mbox{}$}}%
+  \settowidth{\alignwidth}{\usebox{\alignbox}}%
+  \usebox{\alignbox}}
+
+
+
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Ordinarily, TeX typesets letters in math mode in a special math italic    %
+% font.  This makes it typeset "it" to look like the product of the         %
+% variables i and t, rather than like the word "it".  The following         %
+% commands tell TeX to use an ordinary italic font instead.                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifx\documentclass\undefined
+\else
+  \DeclareSymbolFont{tlaitalics}{\encodingdefault}{cmr}{m}{it}
+  \let\itfam\symtlaitalics
+\fi
+
+\makeatletter
+\newcommand{\tlx@c}{\c@tlx@ctr\advance\c@tlx@ctr\@ne}
+\newcounter{tlx@ctr}
+\c@tlx@ctr=\itfam \multiply\c@tlx@ctr"100\relax \advance\c@tlx@ctr "7061\relax
+\mathcode`a=\tlx@c \mathcode`b=\tlx@c \mathcode`c=\tlx@c \mathcode`d=\tlx@c
+\mathcode`e=\tlx@c \mathcode`f=\tlx@c \mathcode`g=\tlx@c \mathcode`h=\tlx@c
+\mathcode`i=\tlx@c \mathcode`j=\tlx@c \mathcode`k=\tlx@c \mathcode`l=\tlx@c
+\mathcode`m=\tlx@c \mathcode`n=\tlx@c \mathcode`o=\tlx@c \mathcode`p=\tlx@c
+\mathcode`q=\tlx@c \mathcode`r=\tlx@c \mathcode`s=\tlx@c \mathcode`t=\tlx@c
+\mathcode`u=\tlx@c \mathcode`v=\tlx@c \mathcode`w=\tlx@c \mathcode`x=\tlx@c
+\mathcode`y=\tlx@c \mathcode`z=\tlx@c
+\c@tlx@ctr=\itfam \multiply\c@tlx@ctr"100\relax \advance\c@tlx@ctr "7041\relax
+\mathcode`A=\tlx@c \mathcode`B=\tlx@c \mathcode`C=\tlx@c \mathcode`D=\tlx@c
+\mathcode`E=\tlx@c \mathcode`F=\tlx@c \mathcode`G=\tlx@c \mathcode`H=\tlx@c
+\mathcode`I=\tlx@c \mathcode`J=\tlx@c \mathcode`K=\tlx@c \mathcode`L=\tlx@c
+\mathcode`M=\tlx@c \mathcode`N=\tlx@c \mathcode`O=\tlx@c \mathcode`P=\tlx@c
+\mathcode`Q=\tlx@c \mathcode`R=\tlx@c \mathcode`S=\tlx@c \mathcode`T=\tlx@c
+\mathcode`U=\tlx@c \mathcode`V=\tlx@c \mathcode`W=\tlx@c \mathcode`X=\tlx@c
+\mathcode`Y=\tlx@c \mathcode`Z=\tlx@c
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                THE describe ENVIRONMENT                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+% It is like the description environment except it takes an argument
+% ARG that should be the text of the widest label.  It adjusts the
+% indentation so each item with label LABEL produces
+%%      LABEL             blah blah blah
+%%      <- width of ARG ->blah blah blah
+%%                        blah blah blah
+\newenvironment{describe}[1]%
+   {\begin{list}{}{\settowidth{\labelwidth}{#1}%
+            \setlength{\labelsep}{.5em}%
+            \setlength{\leftmargin}{\labelwidth}% 
+            \addtolength{\leftmargin}{\labelsep}%
+            \addtolength{\leftmargin}{\parindent}%
+            \def\makelabel##1{\rm ##1\hfill}}%
+            \setlength{\topsep}{0pt}}%% 
+                % Sets \topsep to 0 to reduce vertical space above
+                % and below embedded displayed equations
+   {\end{list}}
+
+%   For tlatex.TeX
+\usepackage{verbatim}
+\makeatletter
+\def\tla{\let\%\relax%
+         \@bsphack
+         \typeout{\%{\the\linewidth}}%
+             \let\do\@makeother\dospecials\catcode`\^^M\active
+             \let\verbatim@startline\relax
+             \let\verbatim@addtoline\@gobble
+             \let\verbatim@processline\relax
+             \let\verbatim@finish\relax
+             \verbatim@}
+\let\endtla=\@esphack
+
+\let\pcal=\tla
+\let\endpcal=\endtla
+\let\ppcal=\tla
+\let\endppcal=\endtla
+
+% The tlatex environment is used by TLATeX.TeX to typeset TLA+.
+% TLATeX.TLA starts its files by writing a \tlatex command.  This
+% command/environment sets \parindent to 0 and defines \% to its
+% standard definition because the writing of the log files is messed up
+% if \% is defined to be something else.  It also executes
+% \@computerule to determine the dimensions for the TLA horizonatl
+% bars.
+\newenvironment{tlatex}{\@computerule%
+                        \setlength{\parindent}{0pt}%
+                       \makeatletter\chardef\%=`\%}{}
+
+
+% The notla environment produces no output.  You can turn a 
+% tla environment to a notla environment to prevent tlatex.TeX from
+% re-formatting the environment.
+
+\def\notla{\let\%\relax%
+         \@bsphack
+             \let\do\@makeother\dospecials\catcode`\^^M\active
+             \let\verbatim@startline\relax
+             \let\verbatim@addtoline\@gobble
+             \let\verbatim@processline\relax
+             \let\verbatim@finish\relax
+             \verbatim@}
+\let\endnotla=\@esphack
+
+\let\nopcal=\notla
+\let\endnopcal=\endnotla
+\let\noppcal=\notla
+\let\endnoppcal=\endnotla
+
+%%%%%%%%%%%%%%%%%%%%%%%% end of tlatex.sty file %%%%%%%%%%%%%%%%%%%%%%% 
+% last modified on Fri  3 August 2012 at 14:23:49 PST by lamport
+
+\begin{document}
+\tlatex
+\setboolean{shading}{true}
+ \@x{}\moduleLeftDash\@xx{ {\MODULE}
+ FormalizedCorollary}\moduleRightDash\@xx{}%
+\@x{ {\EXTENDS} Integers ,\, FiniteSets ,\, Sequences ,\, Utils}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Segments
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ Segment ( a ,\, b ) \.{\defeq}}%
+\@x{\@s{16.4} {\langle} a ,\, b {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{ Seg \.{\defeq}}%
+ \@x{\@s{15.19} \{ s \.{\in} Int \.{\times} Int \.{:} s [ 1 ] \.{\leq} s [ 2 ]
+ \}}%
+\@pvspace{8.0pt}%
+\@x{ EmptySeg \.{\defeq} {\langle} {\rangle}}%
+\@y{\@s{0}%
+ the empty segment is not part of \ensuremath{Seg
+}}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ b ( s ) \.{\defeq}}%
+\@x{\@s{18.12} s [ 1 ]}%
+\@pvspace{8.0pt}%
+\@x{ e ( s ) \.{\defeq}}%
+\@x{\@s{18.24} s [ 2 ]}%
+\@pvspace{8.0pt}%
+\@x{ SegShiftLeft ( s ) \.{\defeq}}%
+\@x{\@s{16.4} Segment ( b ( s ) \.{-} 1 ,\, e ( s ) \.{-} 1 )}%
+\@pvspace{8.0pt}%
+\@x{ SegTruncateLeft ( s ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} b ( s ) \.{=} e ( s )}%
+\@x{\@s{16.4} \.{\THEN} EmptySeg}%
+\@x{\@s{16.4} \.{\ELSE} Segment ( b ( s ) \.{+} 1 ,\, e ( s ) )}%
+\@pvspace{8.0pt}%
+\@x{ Precedes ( s1 ,\, s2 ) \.{\defeq}}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ returns \ensuremath{s1} ≺ \ensuremath{s2
+}}%
+\@xx{}%
+\@x{\@s{16.4} \.{\land} b ( s1 )\@s{0.12} \.{<} b ( s2 )}%
+\@x{\@s{16.4} \.{\land} e ( s1 ) \.{<} e ( s2 )}%
+\@pvspace{8.0pt}%
+\@x{ SegSubsetEq ( s1 ,\, s2 ) \.{\defeq}}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ checks if \ensuremath{s1} is a subset of \ensuremath{s2
+}}%
+\@xx{}%
+\@x{\@s{16.4} \.{\land} b ( s2 )\@s{0.12} \.{\leq} b ( s1 )}%
+\@x{\@s{16.4} \.{\land} e ( s1 ) \.{\leq} e ( s2 )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{Multisegments
+}}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ Multisegments \.{\defeq}}%
+\@x{\@s{16.4} Seq ( Seg )}%
+\@pvspace{16.0pt}%
+\@x{ SubMultisegment ( N ,\, M ) \.{\defeq}}%
+\@x{\@s{16.4} SubBag ( N ,\, M )}%
+\@pvspace{16.0pt}%
+\@x{ SameMultisegment ( M ,\, N ) \.{\defeq}}%
+\@x{\@s{16.4} SameBag ( M ,\, N )}%
+\@pvspace{16.0pt}%
+\@x{ IndexSet ( M ) \.{\defeq}}%
+\@x{\@s{16.4} 1 \.{\dotdot} Len ( M )}%
+\@pvspace{8.0pt}%
+\@x{ Delta ( M ) \.{\defeq}}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ \ensuremath{Delta(M)} is the function \ensuremath{i \.{\mapsto} Delta\_i
+}}%
+\@xx{}%
+\@x{\@s{16.4} [ i \.{\in} IndexSet ( M ) \.{\mapsto} M [ i ] ]}%
+\@pvspace{16.0pt}%
+\@x{ IsLadder ( M ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\land} M \.{\neq} {\langle} {\rangle}\@s{192.95}}%
+\@y{\@s{0}%
+ a ladder is nonempty
+}%
+\@xx{}%
+\@x{\@s{16.4} \.{\land} \E\, R \.{\in} Permutations ( IndexSet ( M ) ) \.{:}}%
+\@x{\@s{31.61} \A\, i \.{\in} 1 \.{\dotdot} ( Len ( M ) \.{-} 1 ) \.{:}}%
+ \@x{\@s{42.93} Precedes ( M [ R [ i \.{+} 1 ] ] ,\, M [ R [ i ] ]
+ )\@s{73.79}}%
+\@y{\@s{0}%
+ \ensuremath{Delta\_\{R[i\.{+}1]\}} ≺ \ensuremath{Delta\_\{R[i]\}
+}}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Depth
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ Depth ( M ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\LET}}%
+\@x{\@s{32.8} IsDepthChain ( i ,\, j ,\, Chain ) \.{\defeq}}%
+\@x{\@s{49.19} \.{\land} Chain [ 1 ] \.{=} i\@s{137.06}}%
+\@y{\@s{0}%
+ the chain starts at index \ensuremath{i
+}}%
+\@xx{}%
+\@x{\@s{49.19} \.{\land} \A\, r \.{\in} 1 \.{\dotdot} j \.{:}}%
+\@x{\@s{64.41} Precedes (}%
+\@x{\@s{80.81} Delta ( M ) [ Chain [ r ] ] ,\,}%
+\@x{\@s{80.81} Delta ( M ) [ Chain [ r \.{+} 1 ] ]}%
+\@x{\@s{64.41} )\@s{183.88}}%
+\@y{\@s{0}%
+ each segment precedes the next one
+}%
+\@xx{}%
+\@x{\@s{16.4} \.{\IN}}%
+\@x{\@s{32.8} [ i \.{\in} IndexSet ( M ) \.{\mapsto}}%
+\@x{\@s{43.76} Max ( \{}%
+\@x{\@s{67.57} j \.{\in} 0 \.{\dotdot} ( Len ( M ) \.{-} 1 ) \.{:}}%
+ \@x{\@s{80.28} \E\, Chain \.{\in} [ 1 \.{\dotdot} ( j \.{+} 1 )
+ \.{\rightarrow} IndexSet ( M ) ] \.{:}}%
+\@x{\@s{91.60} IsDepthChain ( i ,\, j ,\, Chain )\@s{49.19}}%
+\@y{\@s{0}%
+ there exists a chain of length \ensuremath{j} from \ensuremath{i
+}}%
+\@xx{}%
+\@x{\@s{43.76} \} )}%
+\@x{\@s{32.8} ]}%
+\@pvspace{8.0pt}%
+\@x{ d ( M ) \.{\defeq}}%
+\@x{\@s{24.73}}%
+\@y{\@s{0}%
+ returns the depth of the multisegment \ensuremath{M
+}}%
+\@xx{}%
+\@x{\@s{24.73} {\IF} M \.{=} {\langle} {\rangle}}%
+\@x{\@s{24.73} \.{\THEN} 0}%
+\@x{\@s{24.73} \.{\ELSE} Max ( Range ( Depth ( M ) ) )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ The Map \ensuremath{K
+}}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ DepthFiber ( M ,\, k ) \.{\defeq}}%
+\@x{\@s{16.4} Fiber ( Depth ( M ) ,\, k )\@s{160.04}}%
+\@y{\@s{0}%
+ \ensuremath{d\_M\.{\ct}\{\.{-}1\}(k)
+}}%
+\@xx{}%
+\@pvspace{16.0pt}%
+\@x{ AdmissibleEnumeration ( m ,\, k ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\LET}}%
+\@x{\@s{32.8} F \.{\defeq} DepthFiber ( m ,\, k )\@s{127.10}}%
+\@y{\@s{0}%
+ depth fiber at \ensuremath{k
+}}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{\@s{32.8} IsAdmissible ( P ) \.{\defeq}}%
+ \@x{\@s{49.19} \A\, r \.{\in} 1 \.{\dotdot} ( Cardinality ( F ) \.{-} 1 )
+ \.{:}}%
+\@x{\@s{60.52} SegSubsetEq (}%
+\@x{\@s{76.92} Delta ( m ) [ P [ r \.{+} 1 ] ] ,\,}%
+\@x{\@s{76.92} Delta ( m ) [ P [ r ] ]}%
+\@x{\@s{60.52} )\@s{200.01}}%
+\@y{\@s{0}%
+ \ensuremath{P} satisfies the admissibility condition
+}%
+\@xx{}%
+\@x{\@s{16.4} \.{\IN}}%
+\@x{\@s{32.8} {\CHOOSE} P \.{\in} Permutations ( F ) \.{:}}%
+\@x{\@s{49.19} IsAdmissible ( P )\@s{144.66}}%
+\@y{\@s{0}%
+ choose any admissible enumeration
+}%
+\@xx{}%
+\@pvspace{16.0pt}%
+\@x{ jIndex ( M ,\, k ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} k \.{\in} Range ( Depth ( M ) )}%
+\@x{\@s{16.4} \.{\THEN} Last ( AdmissibleEnumeration ( M ,\, k ) )}%
+\@x{\@s{16.4} \.{\ELSE} 0}%
+\@pvspace{16.0pt}%
+\@x{ IVee ( M ) \.{\defeq}}%
+\@x{\@s{19.96} \.{\LET}}%
+\@x{\@s{36.36} Cycles \.{\defeq}}%
+\@x{\@s{52.76} \{ AdmissibleEnumeration ( M ,\, k ) \.{:}}%
+\@x{\@s{70.06} k \.{\in} Range ( Depth ( M ) ) \}\@s{102.5}}%
+\@y{\@s{0}%
+ one cycle for each depth fiber
+}%
+\@xx{}%
+\@x{\@s{19.96} \.{\IN}}%
+\@x{\@s{36.36} PermutationFromCycles (}%
+\@x{\@s{52.76} IndexSet ( M ) ,\,}%
+\@x{\@s{52.76} Cycles}%
+\@x{\@s{36.36} )\@s{222.89}}%
+\@y{\@s{0}%
+ permutation \ensuremath{i \.{\mapsto} i\.{\ct}vee} induced by these cycles
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{2.1a
+}}%
+\@xx{}%
+\@x{ SegmentTransform ( M ,\, i ) \.{\defeq}}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ this is ∆′\ensuremath{\_i
+}}%
+\@xx{}%
+\@x{\@s{16.4} Segment (}%
+\@x{\@s{32.8} b ( Delta ( M ) [ i ] ) ,\,}%
+\@x{\@s{32.8} e ( Delta ( M ) [ IVee ( M ) [ i ] ] )}%
+\@x{\@s{16.4} )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{2.1b
+}}%
+\@xx{}%
+\@x{ DistinguishedIndices ( M ) \.{\defeq}}%
+\@x{\@s{16.4} \{ jIndex ( M ,\, k ) \.{:} k \.{\in} Range ( Depth ( M ) ) \}}%
+\@pvspace{8.0pt}%
+\@x{ RemainingIndices ( M ) \.{\defeq}}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ this is I''\ensuremath{\.{=}}I\ensuremath{\backslash}I\mbox{'}
+}%
+\@xx{}%
+\@x{\@s{16.4} IndexSet ( M ) \.{\,\backslash\,} DistinguishedIndices ( M )}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{2.1c
+}}%
+\@xx{}%
+\@x{ l ( M ) \.{\defeq}}%
+\@x{\@s{22.18} [ r \.{\in} 1 \.{\dotdot} ( d ( M ) \.{+} 1 ) \.{\mapsto}}%
+\@x{\@s{34.35} SegmentTransform ( M ,\, jIndex ( M ,\, r \.{-} 1 ) )}%
+\@x{\@s{22.18} ]}%
+\@pvspace{16.0pt}%
+\@x{ DerivedMultisegment ( M ) \.{\defeq}}%
+\@x{\@s{16.4} EnumerateValues (}%
+\@x{\@s{32.8} [ i \.{\in} RemainingIndices ( M ) \.{\mapsto}}%
+\@x{\@s{43.76} SegmentTransform ( M ,\, i ) ]}%
+\@x{\@s{16.4} )\@s{242.85}}%
+\@y{\@s{0}%
+ \ensuremath{m}\mbox{'} \ensuremath{\.{=}} sum of
+ \ensuremath{Delta}\mbox{'}\_i for \ensuremath{i} in I''
+}%
+\@xx{}%
+\@pvspace{16.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ 2.2
+}%
+\@xx{}%
+\@x{ bTransform ( M ,\, i ) \.{\defeq}}%
+\@x{\@s{16.4} b ( SegmentTransform ( M ,\, i ) )}%
+\@pvspace{8.0pt}%
+\@x{ eTransform ( M ,\, i ) \.{\defeq}}%
+\@x{\@s{16.4} e ( SegmentTransform ( M ,\, i ) )}%
+\@pvspace{8.0pt}%
+\@x{ K ( M ) \.{\defeq}}%
+\@x{\@s{27.73} {\langle} l ( M ) ,\, DerivedMultisegment ( M ) {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ The single \ensuremath{MW} step
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ min ( M ) \.{\defeq}}%
+ \@x{\@s{21.52} Min ( \{ b ( Delta ( M ) [ i ] ) \.{:} i \.{\in} IndexSet ( M
+ ) \} )}%
+\@pvspace{16.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ \ensuremath{3.1a\.{-}3.1c
+}}%
+\@xx{}%
+\@x{ LeadingSequence ( M ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\LET}}%
+\@x{\@s{32.8} CandidateSequences \.{\defeq}}%
+\@x{\@s{49.19} {\UNION} \{}%
+\@x{\@s{65.6} [ 1 \.{\dotdot} k \.{\rightarrow} IndexSet ( M ) ] \.{:}}%
+\@x{\@s{65.6} k \.{\in} 1 \.{\dotdot} Len ( M )}%
+\@x{\@s{49.19} \}\@s{208.94}}%
+\@y{\@s{0}%
+ all possible nonempty index sequences of relevant length
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{\@s{32.8} FirstOK ( i ) \.{\defeq}}%
+ \@x{\@s{49.19} \.{\land}\@s{10.51} b ( Delta ( M ) [ i ] ) \.{=} min ( M
+ )\@s{78.02}}%
+\@y{\@s{0}%
+ \ensuremath{Delta\_i} begins at \ensuremath{min} \ensuremath{M
+}}%
+\@xx{}%
+\@x{\@s{49.19} \.{\land}\@s{10.51} \A\, q \.{\in} IndexSet ( M ) \.{:}}%
+\@x{\@s{74.93} b ( Delta ( M ) [ q ] ) \.{=} min ( M )}%
+\@x{\@s{74.93} \.{\implies}}%
+ \@x{\@s{74.93} e ( Delta ( M ) [ i ] ) \.{\leq} e ( Delta ( M ) [ q ]
+ )\@s{43.36}}%
+\@y{\@s{0}%
+ \ensuremath{Delta\_i} has minimal ending among these segments
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{\@s{32.8} NextCandidate ( i ,\, q ) \.{\defeq}}%
+ \@x{\@s{49.19} \.{\land} Precedes ( Delta ( M ) [ i ] ,\, Delta ( M ) [ q ]
+ )\@s{46.30}}%
+\@y{\@s{0}%
+ \ensuremath{Delta\_i} ≺ \ensuremath{Delta\_q
+}}%
+\@xx{}%
+ \@x{\@s{49.19} \.{\land} b ( Delta ( M ) [ q ] ) \.{=} b ( Delta ( M ) [ i ]
+ ) \.{+} 1\@s{41.0}}%
+\@y{\@s{0}%
+ \ensuremath{Delta\_q} begins exactly one later
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{\@s{32.8} NextOK ( i ,\, next ) \.{\defeq}}%
+\@x{\@s{49.19} \.{\land} NextCandidate ( i ,\, next )\@s{98.39}}%
+\@y{\@s{0}%
+ next is an eligible successor
+}%
+\@xx{}%
+\@x{\@s{49.19} \.{\land} \A\, q \.{\in} IndexSet ( M ) \.{:}}%
+\@x{\@s{64.41} NextCandidate ( i ,\, q )}%
+\@x{\@s{64.41} \.{\implies}}%
+ \@x{\@s{64.41} e ( Delta ( M ) [ next ] ) \.{\leq} e ( Delta ( M ) [ q ]
+ )\@s{36.89}}%
+\@y{\@s{0}%
+ next has minimal ending among eligible successors
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{\@s{32.8} IsValid ( S ) \.{\defeq}}%
+\@x{\@s{49.19} \.{\land}\@s{3.97} FirstOK ( S [ 1 ] )\@s{139.54}}%
+\@y{\@s{0}%
+ first index satisfies (\ensuremath{3.1a})
+}%
+\@xx{}%
+ \@x{\@s{49.19} \.{\land}\@s{3.97} \A\, r \.{\in} 1 \.{\dotdot} ( Len ( S )
+ \.{-} 1 ) \.{:}}%
+\@x{\@s{68.38} NextOK ( S [ r ] ,\, S [ r \.{+} 1 ] )\@s{95.37}}%
+\@y{\@s{0}%
+ successive indices satisfy (\ensuremath{3.1b})
+}%
+\@xx{}%
+ \@x{\@s{49.19} \.{\land}\@s{3.97} {\lnot} \E\, q \.{\in} IndexSet ( M )
+ \.{:}}%
+\@x{\@s{70.95} NextCandidate ( Last ( S ) ,\, q )\@s{72.09}}%
+\@y{\@s{0}%
+ no successor exists after the last index: (\ensuremath{3.1c})
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{\@s{16.4} \.{\IN}}%
+\@x{\@s{32.8} {\CHOOSE} S \.{\in} CandidateSequences \.{:}}%
+\@x{\@s{49.19} IsValid ( S )\@s{151.7}}%
+\@y{\@s{0}%
+ choose one complete leading sequence
+}%
+\@xx{}%
+\@pvspace{16.0pt}%
+\@x{ IStar ( M ) \.{\defeq}}%
+\@x{\@s{16.4}}%
+\@y{\@s{0}%
+ I* \ensuremath{\.{=} \{i\_1,\, \.{\dots},\, i\_k\}
+}}%
+\@xx{}%
+\@x{\@s{16.4} Range ( LeadingSequence ( M ) )\@s{150.21}}%
+\@y{\@s{0}%
+ image of the chosen leading sequence
+}%
+\@xx{}%
+\@pvspace{16.0pt}%
+\@x{ DeltaStar ( M ,\, i ) \.{\defeq}}%
+\@x{\@s{16.4} {\IF} i \.{\in} IStar ( M )\@s{205.38}}%
+\@y{\@s{0}%
+ if \ensuremath{i} is one of the leading indices
+}%
+\@xx{}%
+\@x{\@s{16.4} \.{\THEN} SegTruncateLeft ( Delta ( M ) [ i ] )\@s{114.80}}%
+\@y{\@s{0}%
+ \ensuremath{Delta\_i}* \ensuremath{\.{=} \.{-}Delta\_i
+}}%
+\@xx{}%
+\@x{\@s{16.4} \.{\ELSE} Delta ( M ) [ i ]\@s{193.30}}%
+\@y{\@s{0}%
+ otherwise \ensuremath{Delta\_i}* \ensuremath{\.{=} Delta\_i
+}}%
+\@xx{}%
+\@pvspace{16.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ 3.2
+}%
+\@xx{}%
+\@x{ MCross ( M ) \.{\defeq}}%
+\@x{\@s{16.4} \.{\LET}}%
+\@x{\@s{32.8} KeptIndices \.{\defeq}}%
+\@x{\@s{49.19} \{ i \.{\in} IndexSet ( M ) \.{:}}%
+\@x{\@s{62.38} DeltaStar ( M ,\, i ) \.{\neq} EmptySeg \}\@s{69.7}}%
+\@y{\@s{0}%
+ discard empty transformed segments
+}%
+\@xx{}%
+\@x{\@s{16.4} \.{\IN}}%
+\@x{\@s{32.8} EnumerateValues (}%
+\@x{\@s{49.19} [ i \.{\in} KeptIndices \.{\mapsto}}%
+\@x{\@s{60.16} DeltaStar ( M ,\, i ) ]}%
+\@x{\@s{32.8} )\@s{228.24}}%
+\@y{\@s{0}%
+ \ensuremath{m\.{\ct}}cross \ensuremath{\.{=}} sum of the nonempty
+ \ensuremath{Delta\_i}*
+}%
+\@xx{}%
+\@pvspace{16.0pt}%
+\@x{ DeltaCircle ( M ) \.{\defeq}}%
+\@x{\@s{16.4} Segment (}%
+\@x{\@s{32.8} min ( M ) ,\,\@s{212.74}}%
+\@y{\@s{0}%
+ left endpoint is \ensuremath{min} \ensuremath{m
+}}%
+\@xx{}%
+ \@x{\@s{32.8} min ( M ) \.{+} Len ( LeadingSequence ( M ) ) \.{-}
+ 1\@s{73.80}}%
+\@y{\@s{0}%
+ right endpoint is \ensuremath{min} \ensuremath{m \.{+} k \.{-} 1
+}}%
+\@xx{}%
+\@x{\@s{16.4} )}%
+\@pvspace{16.0pt}%
+\@x{ MW ( M ) \.{\defeq}}%
+ \@x{\@s{35.28} {\langle} MCross ( M ) ,\, DeltaCircle ( M )
+ {\rangle}\@s{127.1}}%
+\@y{\@s{0}%
+ \ensuremath{MW(m) \.{=}} (\ensuremath{m\.{\ct}}cross,
+ \ensuremath{Delta\.{\ct}circ(m)})
+}%
+\@xx{}%
+\@pvspace{16.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Lemma 1
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ {\THEOREM} Lemma1 \.{\defeq}}%
+ \@x{\@s{16.4} \A\, m \.{\in} ( Multisegments \.{\,\backslash\,} \{ {\langle}
+ {\rangle} \} ) \.{:}}%
+\@x{\@s{27.72} min ( m ) \.{<} min ( l ( m ) )}%
+\@x{\@s{27.72} \.{\implies}}%
+ \@x{\@s{27.72} \.{\land} DerivedMultisegment ( m ) \.{\neq} {\langle}
+ {\rangle}}%
+\@x{\@s{27.72} \.{\land} MCross ( m ) \.{\neq} {\langle} {\rangle}}%
+\@pvspace{8.0pt}%
+\@x{ {\PROOF} {\OMITTED}}%
+\@pvspace{16.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ The Statement - Corollary 3.4
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ First alternative formulation
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ {\THEOREM} Corollary1 \.{\defeq}}%
+ \@x{\@s{16.4} \A\, M \.{\in} ( Multisegments \.{\,\backslash\,} \{ {\langle}
+ {\rangle} \} ) \.{:}\@s{112.48}}%
+\@y{\@s{0}%
+ for every nonempty multisegment \ensuremath{M
+}}%
+\@xx{}%
+\@x{\@s{27.72} min ( M ) \.{<} min ( l ( M ) )\@s{140.50}}%
+\@y{\@s{0}%
+ assuming \ensuremath{min} \ensuremath{M \.{<} min} \ensuremath{l(M)
+}}%
+\@xx{}%
+\@x{\@s{27.72} \.{\implies}}%
+\@x{\@s{27.72} \.{\land} l ( M ) \.{=} l ( MCross ( M ) )\@s{127.13}}%
+\@y{\@s{0}%
+ \ensuremath{l(m) \.{=} l(m\.{\ct}cross)
+}}%
+\@xx{}%
+\@x{\@s{27.72} \.{\land} DeltaCircle ( M )}%
+\@x{\@s{42.93} \.{=} DeltaCircle ( DerivedMultisegment ( M ) )\@s{41.0}}%
+\@y{\@s{0}%
+ \ensuremath{Delta\.{\ct}circle(m) \.{=} Delta\.{\ct}circle(m\.{'})
+}}%
+\@xx{}%
+\@x{\@s{27.72} \.{\land} SameMultisegment (}%
+\@x{\@s{55.23} DerivedMultisegment ( MCross ( M ) ) ,\,}%
+\@x{\@s{55.23} MCross ( DerivedMultisegment ( M ) )}%
+\@x{\@s{38.83} )\@s{230.26}}%
+\@y{\@s{0}%
+ (\ensuremath{m\.{\ct}}cross)\mbox{'} \ensuremath{\.{=}}
+ (\ensuremath{m}\mbox{'})\ensuremath{\.{\ct}}cross as multisegments
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ {\PROOF} {\OMITTED}}%
+\@pvspace{16.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ The Statement - Corollary 3.4
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Second alternative formulation
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ {\THEOREM} Corollary2 \.{\defeq}}%
+\@x{\@s{16.4} \.{\LET}}%
+\@x{\@s{32.8} KxId ( P ) \.{\defeq}}%
+\@x{\@s{55.12} \.{\LET}}%
+\@x{\@s{71.52} KP \.{\defeq} K ( P [ 1 ] )\@s{131.78}}%
+\@y{\@s{0}%
+ apply \ensuremath{K} to the first component
+}%
+\@xx{}%
+\@x{\@s{55.12} \.{\IN}}%
+ \@x{\@s{71.52} {\langle} KP [ 1 ] ,\, KP [ 2 ] ,\, P [ 2 ]
+ {\rangle}\@s{82.0}}%
+\@y{\@s{0}%
+ (\ensuremath{K} x \ensuremath{Id)(P)
+}}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{\@s{32.8} IdxMW ( P ) \.{\defeq}}%
+\@x{\@s{49.19} \.{\LET}}%
+\@x{\@s{65.6} MWP \.{\defeq} MW ( P [ 2 ] )\@s{114.8}}%
+\@y{\@s{0}%
+ apply \ensuremath{MW} to the second component
+}%
+\@xx{}%
+\@x{\@s{49.19} \.{\IN}}%
+ \@x{\@s{65.6} {\langle} P [ 1 ] ,\, MWP [ 1 ] ,\, MWP [ 2 ]
+ {\rangle}\@s{76.85}}%
+\@y{\@s{0}%
+ (Id x \ensuremath{MW)(P)
+}}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{\@s{32.8} SameResult ( P ,\, Q ) \.{\defeq}}%
+\@x{\@s{49.19} \.{\land} P [ 1 ] \.{=} Q [ 1 ]\@s{144.29}}%
+\@y{\@s{0}%
+ ladder components are equal
+}%
+\@xx{}%
+\@x{\@s{49.19} \.{\land} SameMultisegment ( P [ 2 ] ,\, Q [ 2 ] )\@s{61.50}}%
+\@y{\@s{0}%
+ multisegment components are equal
+}%
+\@xx{}%
+\@x{\@s{49.19} \.{\land} P [ 3 ] \.{=} Q [ 3 ]\@s{144.29}}%
+\@y{\@s{0}%
+ distinguished segments are equal
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{\@s{16.4} \.{\IN}}%
+ \@x{\@s{32.8} \A\, M \.{\in} ( Multisegments \.{\,\backslash\,} \{ {\langle}
+ {\rangle} \} ) \.{:}}%
+\@x{\@s{44.12} min ( M ) \.{<} min ( l ( M ) )}%
+\@x{\@s{44.12} \.{\implies}}%
+\@x{\@s{44.12} SameResult (}%
+\@x{\@s{60.52} KxId ( MW ( M ) ) ,\,}%
+\@x{\@s{60.52} IdxMW ( K ( M ) )}%
+\@x{\@s{44.12} )\@s{216.94}}%
+\@y{\@s{0}%
+ (\ensuremath{K} x \ensuremath{Id)(MW(m)) \.{=}} (\ensuremath{Id} x
+ \ensuremath{MW)(K(m))
+}}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ {\PROOF} {\OMITTED}}%
+\@pvspace{16.0pt}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ The Statement - Corollary 3.4
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ Third alternative formulation
+}%
+\@xx{}%
+\@x{}%
+\@y{\@s{0}%
+ {\par}\cdash{20}
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ {\THEOREM} Corollary3 \.{\defeq}}%
+ \@x{\@s{16.4} \A\, M \.{\in} ( Multisegments \.{\,\backslash\,} \{ {\langle}
+ {\rangle} \} ) \.{:}}%
+\@x{\@s{27.72} min ( M ) \.{<} min ( l ( M ) )}%
+\@x{\@s{27.72} \.{\implies}}%
+ \@x{\@s{27.72} \.{\land} K ( M ) [ 1 ] \.{=} K ( MW ( M ) [ 1 ] ) [ 1
+ ]\@s{101.84}}%
+\@y{\@s{0}%
+ \ensuremath{l(m) \.{=} l(m\.{\ct}cross)
+}}%
+\@xx{}%
+ \@x{\@s{27.72} \.{\land} MW ( M ) [ 2 ] \.{=} MW ( K ( M ) [ 2 ] ) [ 2
+ ]\@s{90.2}}%
+\@y{\@s{0}%
+ \ensuremath{Delta\.{\ct}circ(m) \.{=} Delta\.{\ct}circ(m\.{'})
+}}%
+\@xx{}%
+\@x{\@s{27.72} \.{\land} SameMultisegment (}%
+\@x{\@s{55.23} K ( MW ( M ) [ 1 ] ) [ 2 ] ,\,}%
+\@x{\@s{55.23} MW ( K ( M ) [ 2 ] ) [ 1 ]}%
+\@x{\@s{38.83} )\@s{222.23}}%
+\@y{\@s{0}%
+ (\ensuremath{m\.{\ct}}cross)\mbox{'} \ensuremath{\.{=}}
+ (\ensuremath{m}\mbox{'})\ensuremath{\.{\ct}}cross as multisegments
+}%
+\@xx{}%
+\@pvspace{8.0pt}%
+\@x{ {\PROOF} {\OMITTED}}%
+\@pvspace{24.0pt}%
+\@x{}\bottombar\@xx{}%
+\setboolean{shading}{false}
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+Glossary
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ceqdash{76}
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+Segment
+ constructs the sequence \ensuremath{{\langle}a,\, b{\rangle}} (keeping in
+ mind that a sequence is a
+ function from indexes to values of the sequence).
+ why choose a sequence and not a set\.{?}
+ because what we mainly use and care about in the proof are the endpoints.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Seg
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ the set of all valid segments [a,\ensuremath{b}] with \ensuremath{a \.{\leq}
+ b}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{EmptySeg
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ the empty sequence \ensuremath{{\langle}{\rangle}}, which we use to represent
+ the empty segment.
+ \ensuremath{EmptySeg} is not part of \ensuremath{Seg}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{b(s)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the beginning/left endpoint of a segment \ensuremath{s}.
+ if \ensuremath{s \.{=} {\langle}a,\,b{\rangle}}, then
+ \ensuremath{b(s)\.{=}a}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{e(s)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the ending/right endpoint of a segment \ensuremath{s}.
+ if \ensuremath{s \.{=} {\langle}a,\,b{\rangle}}, then
+ \ensuremath{e(s)\.{=}b}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{SegShiftLeft(s)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+shifts both endpoints of a segment one place to the left.
+ [a,\ensuremath{b}] becomes [\ensuremath{a\.{-}1},\ensuremath{b\.{-}1}].
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{SegTruncateLeft(s)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+removes the left endpoint of a segment.
+ if the segment is [a,\ensuremath{b}] with \ensuremath{a\.{<}b}, it returns
+ [\ensuremath{a\.{+}1},\ensuremath{b}].
+ if the segment is a singleton [a,a], it returns \ensuremath{EmptySeg}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Precedes(s1,\,s2)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+checks whether \ensuremath{s1} ≺ \ensuremath{s2}.
+ this means that both the beginning and the ending of \ensuremath{s1} are
+ strictly
+ smaller than those of \ensuremath{s2}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{SegSubsetEq(s1,\,s2)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ checks whether \ensuremath{s1} is contained in \ensuremath{s2}, including
+ equality.
+ for \ensuremath{s1\.{=}[a1,\,b1]} and \ensuremath{s2\.{=}[a2,\,b2]}, this
+ means
+ \ensuremath{a2 \.{\leq} a1} and \ensuremath{b1 \.{\leq} b2}.
+\end{cpar}%
+\vshade{10.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Multisegments
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+the set of all multisegments, which are sequences of segments.
+ why choose sequences of segments and not multisets/bags of segments\.{?}
+ because we need to easily be able to use the indexes of the segments,
+ even with repetition.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+this means that two different sequences may represent the same
+ mathematical multisegment. we deal with this using
+ \ensuremath{SameMultisegment
+} rather than ordinary sequence equality.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{SubMultisegment(N,\,M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+checks whether \ensuremath{N} is a submultisegment of \ensuremath{M}.
+ internally, this is \ensuremath{SubBag(N,\,M)}, meaning that every segment
+ occurring in \ensuremath{N
+} occurs in \ensuremath{M} at least as many times.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{SameMultisegment(M,\,N)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ checks whether \ensuremath{M} and \ensuremath{N} represent the same
+ mathematical multisegment,
+ even if they are different sequences.
+ internally, this is \ensuremath{SameBag(M,\,N)}, so equality is determined
+ by the
+ segments and their multiplicities and not by their order.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{IndexSet(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ returns the set \ensuremath{1\.{\dotdot}Len(M)}, \ensuremath{i.e}. the set of
+ global indexes of the segments
+ in \ensuremath{M}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Delta(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ returns the function \ensuremath{i \.{\mapsto} Delta\_i}, where
+ \ensuremath{Delta\_i} is the segment at
+ global index \ensuremath{i}.
+ since \ensuremath{M} itself is a sequence, this is extensionally the same
+ function
+ as \ensuremath{M}, but we keep \ensuremath{Delta(M)} in order to stay close
+ to the notation
+ of the paper.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{IsLadder(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+checks whether \ensuremath{M} is a ladder.
+ first, \ensuremath{M} must be nonempty.
+ then there must exist a permutation \ensuremath{R} of
+ \ensuremath{IndexSet(M)} such that the
+ segments are in standard form, \ensuremath{i.e}.
+ \ensuremath{Delta\_\{R[i\.{+}1]\}} ≺ \ensuremath{Delta\_\{R[i]\}} for every
+ successive pair.
+ using \ensuremath{Permutations} here already makes sure that \ensuremath{R}
+ contains every
+ global index exactly once.
+\end{cpar}%
+\vshade{10.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Depth(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ returns the function \ensuremath{i \.{\mapsto} d\_M(i)}, where
+ \ensuremath{d\_M(i)} is the depth of the
+ segment at index \ensuremath{i}.
+ it does this by taking the maximum \ensuremath{j} such that there exists a
+ depth chain
+ of length \ensuremath{j} starting at index \ensuremath{i}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ internally, \ensuremath{IsDepthChain(i,\,j,\,Chain)} checks that
+ \ensuremath{Chain[1]\.{=}i} and that
+ for every \ensuremath{r} in [\ensuremath{j}],
+ \ensuremath{Delta\_\{Chain[r]\}} ≺ \ensuremath{Delta\_\{Chain[r\.{+}1]\}}.
+ we do not define \ensuremath{IsDepthChain} as an outer operator because it
+ is only
+ auxiliary machinery needed for defining \ensuremath{Depth}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{d(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the depth of the multisegment \ensuremath{M}.
+ if \ensuremath{M} is empty it returns 0.
+ otherwise, it takes the maximum value in \ensuremath{Range(Depth(M))}.
+\end{cpar}%
+\vshade{10.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{DepthFiber(M,\,k)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ returns the depth fiber \ensuremath{d\_M\.{\ct}(\.{-}1)(k)},
+ \ensuremath{i.e}. the set of indexes \ensuremath{i} such that
+ \ensuremath{Depth(M)[i]\.{=}k}.
+ this is implemented using the general \ensuremath{Fiber} operator.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{AdmissibleEnumeration(m,\,k)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+chooses an admissible enumeration of the depth fiber at \ensuremath{k}.
+ it first sets \ensuremath{F} to \ensuremath{DepthFiber(m,\,k)}, and then
+ chooses a permutation \ensuremath{P} of \ensuremath{F
+ } such that \ensuremath{Delta\_\{P[r\.{+}1]\}} is contained in
+ \ensuremath{Delta\_\{P[r]\}} for every
+ successive pair.
+ we do not impose any canonical ordering: \ensuremath{{\CHOOSE}} simply
+ selects one
+ admissible enumeration.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{jIndex(M,\,k)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ returns \ensuremath{j\_k}, \ensuremath{i.e}. the last index in the chosen
+ admissible enumeration
+ at depth \ensuremath{k}.
+ if \ensuremath{k} is not a depth occurring in \ensuremath{M}, it returns 0.
+ the last element is obtained using the general \ensuremath{Last} operator.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{IVee(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the permutation \ensuremath{i \.{\mapsto} i\.{\ct}vee}.
+ for each depth, the chosen admissible enumeration is treated as a cycle.
+ the set of these cycles is then passed to the general
+ \ensuremath{PermutationFromCycles} operator.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{SegmentTransform(M,\,i)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns \ensuremath{Delta}\mbox{'}\_i.
+ its beginning is \ensuremath{b(Delta\_i)}, while its ending is
+ \ensuremath{e(Delta\_\{i\.{\ct}vee\})}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{DistinguishedIndices(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the set I\mbox{'} of distinguished indexes \ensuremath{j\_k},
+ one for every depth occurring in \ensuremath{M}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{RemainingIndices(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ returns I'' \ensuremath{\.{=}} I \ensuremath{\.{\,\backslash\,}} I\mbox{'},
+ \ensuremath{i.e}. the global indexes that are not distinguished.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{l(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the ladder \ensuremath{l(m)}.
+ for each depth \ensuremath{r\.{-}1} from 0 to \ensuremath{d(M)}, it takes
+ the transformed segment
+ Delta\mbox{'}\_\ensuremath{\{j\_\{r\.{-}1\}\}}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{DerivedMultisegment(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ returns \ensuremath{m}\mbox{'}, the multisegment consisting of
+ \ensuremath{Delta}\mbox{'}\_i for all \ensuremath{i} in I''.
+ since a multisegment is represented by a sequence, we need some
+ enumeration of these values.
+ this is handled by the general \ensuremath{EnumerateValues} operator rather
+ than being
+ built directly into this paper-specific definition.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{K(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns \ensuremath{{\langle}l(M),\, DerivedMultisegment(M){\rangle}},
+ \ensuremath{i.e}. \ensuremath{K(m) \.{=}}
+ (\ensuremath{l(m)},\ensuremath{m}\mbox{'}).
+\end{cpar}%
+\vshade{10.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{min(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ returns \ensuremath{min} \ensuremath{m}, \ensuremath{i.e}. the smallest
+ beginning among all segments of \ensuremath{M}.
+ this is implemented by taking \ensuremath{Min} of the set of all
+ \ensuremath{b(Delta\_i)}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{LeadingSequence(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ chooses a sequence \ensuremath{{\langle}i\_1,\,\.{\dots},\,i\_k{\rangle}}
+ satisfying \ensuremath{3.1a\.{-}3.1c}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ internally, \ensuremath{CandidateSequences} contains all possible nonempty
+ sequences
+ of indexes of length at most \ensuremath{Len(M)}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{FirstOK(i)} checks \ensuremath{3.1a}:
+ \ensuremath{Delta\_i} begins at \ensuremath{min(M)}, and among all segments
+ beginning there it has
+ minimal ending.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{NextCandidate(i,\,q)} checks whether \ensuremath{q} can follow
+ \ensuremath{i}:
+ \ensuremath{Delta\_i} ≺ \ensuremath{Delta\_q} and
+ \ensuremath{b(Delta\_q)\.{=}b(Delta\_i)\.{+}1}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{NextOK(i,\,next)} checks \ensuremath{3.1b}:
+ next is a valid candidate, and among all valid candidates it has
+ minimal ending.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{IsValid(S)} checks that the first element satisfies
+ \ensuremath{FirstOK},
+ every successive pair satisfies \ensuremath{NextOK}, and that there is no
+ valid
+ successor after the last element, which gives \ensuremath{3.1c}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{{\CHOOSE}} then selects one complete leading sequence.
+ these auxiliary operators are local because they are only machinery
+ for implementing the recursive construction described in the paper.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{IStar(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ returns I* \ensuremath{\.{=} \{i\_1,\,\.{\dots},\,i\_k\}}, the set of indexes
+ occurring in the chosen
+ leading sequence.
+ this is simply \ensuremath{Range(LeadingSequence(M))}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{DeltaStar(M,\,i)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns \ensuremath{Delta\_i}*.
+ if \ensuremath{i} is in I*, it applies \ensuremath{SegTruncateLeft} to
+ \ensuremath{Delta\_i}.
+ otherwise, it leaves \ensuremath{Delta\_i} unchanged.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{MCross(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns \ensuremath{m\.{\ct}}cross.
+ first it keeps exactly those indexes for which \ensuremath{Delta\_i}* is not
+ \ensuremath{EmptySeg}.
+ it then uses \ensuremath{EnumerateValues} to turn the surviving transformed
+ segments
+ into a sequence.
+ therefore empty transformed segments are discarded, while repetitions
+ of nonempty segments are preserved.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{DeltaCircle(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns \ensuremath{Delta\.{\ct}}circle.
+ if the chosen leading sequence has length \ensuremath{k}, then
+ \ensuremath{Delta\.{\ct}}circle \ensuremath{\.{=}} [\ensuremath{min(M)},
+ \ensuremath{min(M)\.{+}k\.{-}1}].
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{MW(M)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns \ensuremath{{\langle}MCross(M),\, DeltaCircle(M){\rangle}},
+ \ensuremath{i.e}. \ensuremath{MW(m) \.{=}}
+ (\ensuremath{m\.{\ct}}cross,\ensuremath{Delta\.{\ct}}circle).
+\end{cpar}%
+\vshade{10.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ceqdash{76}
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Utils
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ceqdash{76}
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Range(f)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the image/range of a function \ensuremath{f},
+ \ensuremath{i.e}. \ensuremath{\{f[x] \.{:} x \.{\in} {\DOMAIN} f\}}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Max(S)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the maximum element of a nonempty finite set \ensuremath{S}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Min(S)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the minimum element of a nonempty finite set \ensuremath{S}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{IsInjective(f)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+checks whether \ensuremath{f} is injective:
+ distinct elements of \ensuremath{{\DOMAIN} f} must have distinct images.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Permutations(S)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the set of all permutations of a finite set \ensuremath{S}.
+ a permutation is represented as a function from
+ \ensuremath{1\.{\dotdot}Cardinality(S)} to \ensuremath{S
+} which is injective.
+ because the domain and \ensuremath{S} have the same finite cardinality,
+ injectivity also guarantees that every element of \ensuremath{S} occurs
+ exactly once.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{ChoosePermutation(S)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ chooses one arbitrary permutation of \ensuremath{S} using
+ \ensuremath{{\CHOOSE}}.
+ this is useful whenever we need to turn a set of indexes into a sequence
+ but do not care about the particular order.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Fiber(f,\,y)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the fiber/preimage of \ensuremath{y} under \ensuremath{f},
+ \ensuremath{i.e}. all \ensuremath{x} in \ensuremath{{\DOMAIN} f} such that
+ \ensuremath{f[x]\.{=}y}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Last(S)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+returns the last element of a nonempty sequence \ensuremath{S},
+ \ensuremath{i.e}. \ensuremath{S[Len(S)]}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{Multiplicity(S,\,x)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ returns the number of indexes \ensuremath{i} for which
+ \ensuremath{S[i]\.{=}x}.
+ when \ensuremath{S} represents a bag/multiset, this is the multiplicity of
+ \ensuremath{x
+} in that bag.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{SubBag(A,\,B)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+checks whether A is a subbag of \ensuremath{B}.
+ for every value occurring in A, its multiplicity in A must be no greater
+ than its multiplicity in \ensuremath{B}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{SameBag(A,\,B)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+checks whether A and \ensuremath{B} represent the same bag.
+ this means \ensuremath{SubBag(A,\,B)} and \ensuremath{SubBag(B,\,A)}, so
+ order is ignored but
+ repetitions/multiplicities are preserved.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{PermutationFromCycles(I,\,Cycles)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+constructs a permutation of I from a set of cycles.
+ for each \ensuremath{i}, it finds the cycle \ensuremath{E} containing
+ \ensuremath{i} and the position \ensuremath{r} of \ensuremath{i} in
+ \ensuremath{E}.
+ if \ensuremath{i} is the last element of \ensuremath{E}, it maps
+ \ensuremath{i} to \ensuremath{E[1]}.
+ otherwise, it maps \ensuremath{i} to \ensuremath{E[r\.{+}1]}.
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{EnumerateValues(f)
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+turns the values of a finite function \ensuremath{f} into a sequence.
+ it chooses a permutation of \ensuremath{{\DOMAIN} f} and returns the values
+ of \ensuremath{f} in
+ that order.
+ unlike \ensuremath{Range(f)}, this preserves repetitions:
+ if two different indexes map to the same value, that value appears twice
+ in the resulting sequence.
+\end{cpar}%
+\vshade{10.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ceqdash{76}
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+Notes on notation and organization
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ceqdash{76}
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+why choose operators and not function notations\.{?}
+ for instance, why define Multiplicity as \ensuremath{Multiplicity(S,\,x)}
+ without
+ specifying the domain, meaning something like
+ \ensuremath{Multiplicity[S \.{\in} Seq(\.{\dots}),\, x \.{\in}
+ \.{\dots}]}\.{?}
+\end{cpar}%
+\vshade{5.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+TLA+ is untyped, so if we do need to specify the domain, we can do so in
+ the definitions that use these objects.
+ second, the bracket notation defines a function, while the operator
+ notation defines an operator.
+ from a more practical standpoint, unfolding the operator notation in a
+ proof requires less machinery and less proof obligations.
+\end{cpar}%
+\vshade{15.0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ the purpose of \ensuremath{Utils} is to separate operations that are not
+ specific to
+ this paper, such as \ensuremath{Range}, \ensuremath{Fiber}, permutations,
+ bag equality, or
+ constructing a permutation from cycles.
+\end{cpar}%
+\end{lcom}%
+\end{document}

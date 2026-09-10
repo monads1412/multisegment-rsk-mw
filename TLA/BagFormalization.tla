@@ -48,6 +48,7 @@ Before(s1, s2) ==               \* used for a standard order of the multisegment
 \* --------------------
 
 Multisegments ==
+    \* all functions from finite sets of segments to natural numbers > 0
     UNION {
         [S -> (Nat \ {0})] :
             S \in {T \in SUBSET Seg : IsFiniteSet(T)}

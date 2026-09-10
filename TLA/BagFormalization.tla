@@ -68,12 +68,9 @@ SameMultisegment(M, N) ==
 IsLadder(M) ==
     /\ M # EmptyBag
     /\ BagCardinality(M) = Cardinality(BagToSet(M))
-    /\ \E sequence \in [1..BagCardinality(M) -> BagToSet(M)] :
-        /\ {sequence[i] : i \in 1..BagCardinality(M)}
-                = BagToSet(M)
-        /\ \A i \in 1..(BagCardinality(M) - 1) :
-                Precedes(sequence[i], sequence[i + 1])
-
+    /\ \E sequence \in Permutations(BagToSet(M)) :
+        \A i \in 1..(BagCardinality(M) - 1) :
+            Precedes(sequence[i], sequence[i + 1])
 
 (* this only gives an order of the distinct elements
    and the order will be unique *)

@@ -37,7 +37,11 @@ SegSubsetEq(s1, s2) ==
     /\ b(s2) <= b(s1)
     /\ e(s1) <= e(s2)
 
-Before(s1, s2) ==               \* used for a standard order of the multisegment
+
+(* used for a standard order of the multisegment
+   this will become necessary for admissibleEnumeration "output"
+   since it is required (by choice) to be in increasing global-index order *)
+Before(s1, s2) ==              
     \/ b(s1) < b(s2)
     \/ /\ b(s1) = b(s2)
        /\ e(s1) > e(s2)
@@ -63,8 +67,9 @@ SameMultisegment(M, N) ==
     M = N
 
 
-\* checks if there is a sequence of all the distinct elements of the multiset
-\* where Precedes(sequence[i], sequence[i+1]) holds for all relevant i
+(* checks if there is a sequence of all the distinct elements of the multiset
+   where Precedes(sequence[i], sequence[i+1]) holds for all relevant i.
+   no need for any global indices *)
 IsLadder(M) ==
     /\ M # EmptyBag
     /\ BagCardinality(M) = Cardinality(BagToSet(M))
@@ -72,15 +77,14 @@ IsLadder(M) ==
         \A i \in 1..(BagCardinality(M) - 1) :
             Precedes(sequence[i], sequence[i + 1])
 
+
+
 (* this only gives an order of the distinct elements
    and the order will be unique *)
 StandardOrder(M) ==
     CHOOSE ordering \in
-        {sequence \in
-            [1..Cardinality(BagToSet(M)) -> BagToSet(M)] :
-            /\ {sequence[i] : i \in DOMAIN sequence}
-                    = BagToSet(M)
-            /\ \A i \in
+        {sequence \in Permutations(BagToSet(M)) :
+            \A i \in
                 1..(Cardinality(BagToSet(M)) - 1) :
                     Before(sequence[i], sequence[i + 1])
         } :
@@ -139,7 +143,7 @@ d(M, i) ==
 
 
 (* returns set of all global indices with given depth *)
-depthBagCardinality(M, depth) ==
+depthGlobalIndices(M, depth) ==
     {j \in 1..BagCardinality(M) :
         d(M, j) = depth}
 
@@ -149,19 +153,17 @@ depthBagCardinality(M, depth) ==
 AdmissibleEnumeration(M, depth) ==
     CHOOSE enumeration \in {
         sequence \in
-            Permutations(depthBagCardinality(M, depth)) :
+            Permutations(depthGlobalIndices(M, depth)) :
 
             /\ \A i \in
-                1..(Cardinality(
-                    depthBagCardinality(M, depth)) - 1) :
+                1..(Cardinality(depthGlobalIndices(M, depth)) - 1) :
                     SegSubsetEq(
                         segmentOf(M, sequence[i + 1]),
                         segmentOf(M, sequence[i])
                     )
 
             /\ \A j \in
-                1..(Cardinality(
-                    depthBagCardinality(M, depth)) - 1) :
+                1..(Cardinality(depthGlobalIndices(M, depth)) - 1) :
                     sequence[j] < sequence[j + 1]
     } :
         TRUE
@@ -196,7 +198,7 @@ DistinuishedIndicies(M) ==
         i =
             AdmissibleEnumeration(M, d(M, i))[
                 Cardinality(
-                    depthBagCardinality(M, d(M, i))
+                    depthGlobalIndices(M, d(M, i))
                 )
             ]
     }

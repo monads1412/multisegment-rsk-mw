@@ -62,7 +62,8 @@ IsLadder(M) ==
     /\ M # <<>>                                              \* a ladder is nonempty
     /\ \E R \in Permutations(IndexSet(M)) :
         \A i \in 1..(Len(M) - 1) :
-            Precedes(M[R[i + 1]], M[R[i]])                   \* Delta_{R[i+1]} ≺ Delta_{R[i]}                                
+            Precedes(M[R[i]], M[R[i + 1]])                   \* Delta_{R[i]} ≺ Delta_{R[i+1]}                                
+
 
 \* --------------------
 \* Depth
@@ -100,15 +101,15 @@ DepthFiber(M, k) ==
     Fiber(Depth(M), k)                                       \* d_M^{-1}(k)
 
 
-AdmissibleEnumeration(m, k) ==
+AdmissibleEnumeration(M, k) ==
     LET
-        F == DepthFiber(m, k)                                \* depth fiber at k
+        F == DepthFiber(M, k)                                \* depth fiber at k
 
         IsAdmissible(P) ==
             \A r \in 1..(Cardinality(F) - 1) :
                 SegSubsetEq(
-                    Delta(m)[P[r + 1]],
-                    Delta(m)[P[r]]
+                    Delta(M)[P[r + 1]],
+                    Delta(M)[P[r]]
                 )                                            \* P satisfies the admissibility condition
     IN
         CHOOSE P \in Permutations(F) :
@@ -127,10 +128,7 @@ IVee(M) ==
             {AdmissibleEnumeration(M, k) :
                 k \in Range(Depth(M))}                          \* one cycle for each depth fiber
     IN
-        PermutationFromCycles(
-            IndexSet(M),
-            Cycles
-        )                                                    \* permutation i |-> i^vee induced by these cycles
+        PermutationFromCycles(IndexSet(M), Cycles)               \* permutation i |-> i^vee induced by these cycles
 
 
 \* 2.1a 

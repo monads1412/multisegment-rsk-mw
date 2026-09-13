@@ -32,8 +32,10 @@ public class Segment implements Comparable<Segment> {
 
     //check if used at all (probably not)
     public boolean subsetEq(Segment s1, Segment s2){
-        return isSegment(s1) && isSegment(s2) && s1.b <= s2.b && s2.e <= s1.e;
-    }
+    return isSegment(s1) && isSegment(s2)
+        && s2.b <= s1.b
+        && s1.e <= s2.e;
+}
 
     // compare two segments: first b1 < b2, then e2 < e1
     @Override

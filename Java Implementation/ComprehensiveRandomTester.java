@@ -6,18 +6,23 @@ import java.math.BigInteger;
 import java.util.*;
 
 /**
- * Comprehensive randomized differential/property tester for Segment + MultiSegment.
+ * Comprehensive differential/property tester for Segment + MultiSegment.
  *
  * It does NOT reuse the implementation logic as its oracle.  It reconstructs the
  * mathematical objects independently from the constructor input, then compares
  * the Java implementation against those independently computed results.
  *
+ * The first argument can be either a positive sample count (random mode) or
+ * "all" (exhaustive mode).  Exhaustive mode checks every nonempty multisegment
+ * satisfying the supplied bounds.
+ *
  * Usage:
  *   java ... com.salma.ComprehensiveRandomTester \
- *        SAMPLES ENDPOINT_BOUND MAX_DISTINCT MAX_MULTIPLICITY MAX_TOTAL_CARDINALITY SEED
+ *        SAMPLES|all ENDPOINT_BOUND MAX_DISTINCT MAX_MULTIPLICITY MAX_TOTAL_CARDINALITY SEED
  *
- * Example:
+ * Examples:
  *   10000 20 4 2 5 12345
+ *   all 2 3 2 4 12345
  */
 public final class ComprehensiveRandomTester {
 
@@ -333,13 +338,18 @@ public final class ComprehensiveRandomTester {
         if (args.length != 6) {
             System.err.println(
                 "Usage: ComprehensiveRandomTester " +
-                "SAMPLES ENDPOINT_BOUND MAX_DISTINCT MAX_MULTIPLICITY " +
+                "SAMPLES|all ENDPOINT_BOUND MAX_DISTINCT MAX_MULTIPLICITY " +
                 "MAX_TOTAL_CARDINALITY SEED"
             );
+            System.err.println();
+            System.err.println("Examples:");
+            System.err.println("  10000 20 4 2 5 12345");
+            System.err.println("  all 2 3 2 4 12345");
             System.exit(2);
         }
 
-        int samples = positiveInt(args[0], "SAMPLES");
+        boolean exhaustive = args[0].equalsIgnoreCase("all");
+        int samples = exhaustive ? -1 : positiveInt(args[0], "SAMPLES");
         int endpointBound = nonnegativeInt(args[1], "ENDPOINT_BOUND");
         int maxDistinct = positiveInt(args[2], "MAX_DISTINCT");
         int maxMultiplicity = positiveInt(args[3], "MAX_MULTIPLICITY");
@@ -358,17 +368,32 @@ public final class ComprehensiveRandomTester {
                 maxTotal
             );
 
-        if (BigInteger.valueOf(samples).compareTo(theoretical) > 0) {
+        if (!exhaustive && BigInteger.valueOf(samples).compareTo(theoretical) > 0) {
             throw new IllegalArgumentException(
                 "Requested " + samples + " distinct multisegments, but only " +
                 theoretical + " exist under these bounds."
             );
         }
 
+        if (exhaustive && theoretical.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0) {
+            throw new IllegalArgumentException(
+                "Exhaustive mode would require checking " + theoretical +
+                " multisegments, which exceeds this tester's counter range. " +
+                "Use tighter bounds."
+            );
+        }
+
         System.out.println();
         System.out.println("============================================================");
-        System.out.println("Comprehensive Java randomized test");
-        System.out.println("Samples                  = " + samples);
+        System.out.println(
+            exhaustive
+                ? "Comprehensive Java exhaustive test"
+                : "Comprehensive Java randomized test"
+        );
+        System.out.println("Mode                     = " + (exhaustive ? "ALL" : "RANDOM"));
+        if (!exhaustive) {
+            System.out.println("Samples                  = " + samples);
+        }
         System.out.println(
             "Endpoint range           = -" + endpointBound + ".." + endpointBound
         );
@@ -391,68 +416,121 @@ public final class ComprehensiveRandomTester {
         System.out.println("============================================================");
         System.out.println();
 
-        // Segment-level checks are independent of the random multisegments.
+        // Segment-level checks are independent of the multisegment mode.
         testSegmentClass(universe, endpointBound, seed);
 
         // Edge-case behavior of the empty multisegment.
         testEmptyMultisegment();
 
-        Random random = new Random(seed);
-        Set<String> seen = new HashSet<>();
-        int generated = 0;
-        int attempts = 0;
-        int maxAttempts = Math.max(10000, samples * 1000);
+        long checkedCases;
 
-        while (generated < samples) {
-            if (++attempts > maxAttempts) {
-                throw new IllegalStateException(
-                    "Could not generate enough distinct random cases efficiently. " +
-                    "Try wider bounds or request fewer samples."
+        if (exhaustive) {
+            long totalCases = theoretical.longValueExact();
+            long progressStep = Math.max(1L, totalCases / 10L);
+            long[] generated = {0L};
+            Random constructorOrderRandom = new Random(seed);
+
+            enumerateAllCases(
+                universe,
+                effectiveDistinct,
+                maxMultiplicity,
+                maxTotal,
+                constructorOrderRandom,
+                c -> {
+                    generated[0]++;
+                    try {
+                        testOne(c.constructorInput);
+                    } catch (Throwable failure) {
+                        System.err.println();
+                        System.err.println("============================================================");
+                        System.err.println("FAIL");
+                        System.err.println("Case number   = " + generated[0]);
+                        System.err.println("Mode          = ALL");
+                        System.err.println("Input         = " + c.key);
+                        System.err.println("============================================================");
+                        throw failure;
+                    }
+
+                    if (
+                        generated[0] % progressStep == 0 ||
+                        generated[0] == totalCases
+                    ) {
+                        System.out.println(
+                            "Checked " + generated[0] + " / " + totalCases +
+                            " multisegments..."
+                        );
+                    }
+                }
+            );
+
+            checkedCases = generated[0];
+            if (checkedCases != totalCases) {
+                throw new AssertionError(
+                    "Exhaustive generator produced " + checkedCases +
+                    " cases, but the theoretical count is " + totalCases + "."
                 );
             }
+        } else {
+            Random random = new Random(seed);
+            Set<String> seen = new HashSet<>();
+            int generated = 0;
+            int attempts = 0;
+            int maxAttempts = Math.max(10000, samples * 1000);
 
-            GeneratedCase c =
-                generateCase(
-                    random,
-                    universe,
-                    effectiveDistinct,
-                    maxMultiplicity,
-                    maxTotal
-                );
+            while (generated < samples) {
+                if (++attempts > maxAttempts) {
+                    throw new IllegalStateException(
+                        "Could not generate enough distinct random cases efficiently. " +
+                        "Try wider bounds or request fewer samples."
+                    );
+                }
 
-            if (!seen.add(c.key)) {
-                continue;
+                GeneratedCase c =
+                    generateCase(
+                        random,
+                        universe,
+                        effectiveDistinct,
+                        maxMultiplicity,
+                        maxTotal
+                    );
+
+                if (!seen.add(c.key)) {
+                    continue;
+                }
+
+                generated++;
+                try {
+                    testOne(c.constructorInput);
+                } catch (Throwable failure) {
+                    System.err.println();
+                    System.err.println("============================================================");
+                    System.err.println("FAIL");
+                    System.err.println("Sample number = " + generated);
+                    System.err.println("Seed          = " + seed);
+                    System.err.println("Input         = " + c.key);
+                    System.err.println("============================================================");
+                    throw failure;
+                }
+
+                if (generated % Math.max(1, samples / 10) == 0 || generated == samples) {
+                    System.out.println(
+                        "Checked " + generated + " / " + samples + " multisegments..."
+                    );
+                }
             }
 
-            generated++;
-            try {
-                testOne(c.constructorInput);
-            } catch (Throwable failure) {
-                System.err.println();
-                System.err.println("============================================================");
-                System.err.println("FAIL");
-                System.err.println("Sample number = " + generated);
-                System.err.println("Seed          = " + seed);
-                System.err.println("Input         = " + c.key);
-                System.err.println("============================================================");
-                throw failure;
-            }
-
-            if (generated % Math.max(1, samples / 10) == 0 || generated == samples) {
-                System.out.println(
-                    "Checked " + generated + " / " + samples + " multisegments..."
-                );
-            }
+            checkedCases = generated;
         }
 
         System.out.println();
         System.out.println("============================================================");
         System.out.println("ALL JAVA TESTS PASSED");
-        System.out.println("Distinct multisegments checked = " + samples);
+        System.out.println("Mode                         = " + (exhaustive ? "ALL" : "RANDOM"));
+        System.out.println("Distinct multisegments checked = " + checkedCases);
         System.out.println("Individual assertions checked  = " + checks);
         System.out.println(
             "Non-vacuous Lemma/Corollary cases = " + corollaryCases +
-            " / " + samples
+            " / " + checkedCases
         );
         System.out.println("Seed = " + seed);
         System.out.println("============================================================");
@@ -900,6 +978,125 @@ public final class ComprehensiveRandomTester {
         return true;
     }
 
+    @FunctionalInterface
+    private interface CaseConsumer {
+        void accept(GeneratedCase c) throws Exception;
+    }
+
+    /**
+     * Enumerates every nonempty multisegment satisfying the supplied bounds.
+     * Each mathematical multisegment (bag) is generated exactly once.
+     */
+    private static void enumerateAllCases(
+        List<V> universe,
+        int maxDistinct,
+        int maxMultiplicity,
+        int maxTotal,
+        Random constructorOrderRandom,
+        CaseConsumer consumer
+    ) throws Exception {
+        for (int d = 1; d <= maxDistinct; d++) {
+            V[] chosen = new V[d];
+            enumerateDistinctChoices(
+                universe,
+                0,
+                0,
+                chosen,
+                maxMultiplicity,
+                maxTotal,
+                constructorOrderRandom,
+                consumer
+            );
+        }
+    }
+
+    private static void enumerateDistinctChoices(
+        List<V> universe,
+        int start,
+        int depth,
+        V[] chosen,
+        int maxMultiplicity,
+        int maxTotal,
+        Random constructorOrderRandom,
+        CaseConsumer consumer
+    ) throws Exception {
+        if (depth == chosen.length) {
+            int[] multiplicities = new int[chosen.length];
+            enumerateMultiplicities(
+                chosen,
+                multiplicities,
+                0,
+                0,
+                maxMultiplicity,
+                maxTotal,
+                constructorOrderRandom,
+                consumer
+            );
+            return;
+        }
+
+        int stillNeeded = chosen.length - depth;
+        int lastStart = universe.size() - stillNeeded;
+
+        for (int i = start; i <= lastStart; i++) {
+            chosen[depth] = universe.get(i);
+            enumerateDistinctChoices(
+                universe,
+                i + 1,
+                depth + 1,
+                chosen,
+                maxMultiplicity,
+                maxTotal,
+                constructorOrderRandom,
+                consumer
+            );
+        }
+    }
+
+    private static void enumerateMultiplicities(
+        V[] chosen,
+        int[] multiplicities,
+        int position,
+        int totalSoFar,
+        int maxMultiplicity,
+        int maxTotal,
+        Random constructorOrderRandom,
+        CaseConsumer consumer
+    ) throws Exception {
+        if (position == chosen.length) {
+            consumer.accept(
+                buildGeneratedCase(
+                    Arrays.asList(chosen),
+                    multiplicities,
+                    constructorOrderRandom
+                )
+            );
+            return;
+        }
+
+        // Every remaining distinct segment must occur at least once.
+        int remainingAfterThis = chosen.length - position - 1;
+        int maxHere =
+            Math.min(
+                maxMultiplicity,
+                maxTotal - totalSoFar - remainingAfterThis
+            );
+
+        for (int multiplicity = 1; multiplicity <= maxHere; multiplicity++) {
+            multiplicities[position] = multiplicity;
+            enumerateMultiplicities(
+                chosen,
+                multiplicities,
+                position + 1,
+                totalSoFar + multiplicity,
+                maxMultiplicity,
+                maxTotal,
+                constructorOrderRandom,
+                consumer
+            );
+        }
+    }
+
     private static GeneratedCase generateCase(
         Random random,
         List<V> universe,
@@ -932,10 +1129,18 @@ public final class ComprehensiveRandomTester {
             remainingCapacity -= extra;
         }
 
+        return buildGeneratedCase(chosen, multiplicities, random);
+    }
+
+    private static GeneratedCase buildGeneratedCase(
+        List<V> chosen,
+        int[] multiplicities,
+        Random constructorOrderRandom
+    ) {
         List<Segment> expanded = new ArrayList<>();
         StringBuilder key = new StringBuilder();
 
-        for (int i = 0; i < d; i++) {
+        for (int i = 0; i < chosen.size(); i++) {
             V value = chosen.get(i);
             if (i > 0) {
                 key.append(" ; ");
@@ -947,9 +1152,9 @@ public final class ComprehensiveRandomTester {
             }
         }
 
-        // Constructor order is deliberately randomized to verify that
-        // TreeMultiset/canonical ordering, not insertion order, drives results.
-        Collections.shuffle(expanded, random);
+        // The mathematical case is a bag, so constructor order is irrelevant.
+        // We still shuffle deterministically to exercise insertion-order independence.
+        Collections.shuffle(expanded, constructorOrderRandom);
 
         return new GeneratedCase(
             expanded.toArray(new Segment[0]),
@@ -991,12 +1196,10 @@ public final class ComprehensiveRandomTester {
         for (int d = 1; d <= maxDistinct; d++) {
             BigInteger choose = binomial(segmentValues, d);
             BigInteger multiplicityPatterns =
-                BigInteger.valueOf(
-                    multiplicityPatternCount(
-                        d,
-                        maxMultiplicity,
-                        maxTotal
-                    )
+                multiplicityPatternCount(
+                    d,
+                    maxMultiplicity,
+                    maxTotal
                 );
             total = total.add(choose.multiply(multiplicityPatterns));
         }
@@ -1004,30 +1207,34 @@ public final class ComprehensiveRandomTester {
         return total;
     }
 
-    private static long multiplicityPatternCount(
+    private static BigInteger multiplicityPatternCount(
         int d,
         int maxMultiplicity,
         int maxTotal
     ) {
-        long[][] dp = new long[d + 1][maxTotal + 1];
-        dp[0][0] = 1;
+        BigInteger[][] dp = new BigInteger[d + 1][maxTotal + 1];
+        for (int i = 0; i <= d; i++) {
+            Arrays.fill(dp[i], BigInteger.ZERO);
+        }
+        dp[0][0] = BigInteger.ONE;
 
         for (int i = 0; i < d; i++) {
             for (int sum = 0; sum <= maxTotal; sum++) {
-                if (dp[i][sum] == 0) {
+                if (dp[i][sum].signum() == 0) {
                     continue;
                 }
                 for (int mult = 1; mult <= maxMultiplicity; mult++) {
                     if (sum + mult <= maxTotal) {
-                        dp[i + 1][sum + mult] += dp[i][sum];
+                        dp[i + 1][sum + mult] =
+                            dp[i + 1][sum + mult].add(dp[i][sum]);
                     }
                 }
             }
         }
 
-        long result = 0;
+        BigInteger result = BigInteger.ZERO;
         for (int sum = 1; sum <= maxTotal; sum++) {
-            result += dp[d][sum];
+            result = result.add(dp[d][sum]);
         }
         return result;
     }

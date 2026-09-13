@@ -1,0 +1,47 @@
+TLC2 Version 2026.09.12.025210 (rev: 867aefb)
+Running breadth-first search Model-Checking with fp 110 and seed -2618087586532018442 with 1 worker on 8 cores with 1732MB heap and 64MB offheap memory [pid: 16091] (Linux 6.18.33.2-microsoft-standard-WSL2 amd64, Ubuntu 17.0.20 64bit, MSBDiskFPSet, DiskStateQueue).
+Parsing file /mnt/c/Users/aslis/OneDrive - mail.tau.ac.il/Weizmann Summer/TLA/Formalized/TLA/RandomBagTests.tla
+Parsing file /mnt/c/Users/aslis/OneDrive - mail.tau.ac.il/Weizmann Summer/TLA/Formalized/TLA/BagFormalization.tla
+Parsing file /tmp/tlc-11821634620053371295/_TLCTrace.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/_TLCTrace.tla)
+Parsing file /tmp/tlc-11821634620053371295/Integers.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/Integers.tla)
+Parsing file /tmp/tlc-11821634620053371295/FiniteSets.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/FiniteSets.tla)
+Parsing file /tmp/tlc-11821634620053371295/Sequences.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/Sequences.tla)
+Parsing file /mnt/c/Users/aslis/OneDrive - mail.tau.ac.il/Weizmann Summer/TLA/Formalized/TLA/Utils.tla
+Parsing file /tmp/tlc-11821634620053371295/Bags.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/Bags.tla)
+Parsing file /tmp/tlc-11821634620053371295/Naturals.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/Naturals.tla)
+Parsing file /tmp/tlc-11821634620053371295/TLC.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/TLC.tla)
+Parsing file /tmp/tlc-11821634620053371295/TLCExt.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/TLCExt.tla)
+Semantic processing of module Naturals
+Semantic processing of module Integers
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module Utils
+Semantic processing of module TLC
+Semantic processing of module Bags
+Semantic processing of module BagFormalization
+Semantic processing of module TLCExt
+Semantic processing of module _TLCTrace
+Semantic processing of module RandomBagTests
+Linting of module Utils
+Linting of module BagFormalization
+Linting of module TLCExt
+Linting of module _TLCTrace
+Linting of module RandomBagTests
+Starting... (2026-09-13 14:41:31)
+Warning: The invariant SampleCountCheck is a constant-level formula (i.e., it contains no variables, primes, or temporal operators) and evaluates to TRUE. To assert constant-level formulas in your spec, use ASSUME ConstInv. If you optionally want to give the assumption a name, write ASSUME YourAssumption == ConstInv instead. See https://explain.tlapl.us/assumptions-and-invariants for additional details.
+(Use the -nowarning option to disable this warning.)
+Computing initial states...
+Computed 2 initial states...
+Computed 4 initial states...
+Computed 8 initial states...
+Computed 16 initial states...
+Computed 32 initial states...
+Finished computing initial states: 40 distinct states generated at 2026-09-13 14:46:15.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 8.7E-17
+80 states generated, 40 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 1.
+The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+Finished in 04min 44s at (2026-09-13 14:46:15)

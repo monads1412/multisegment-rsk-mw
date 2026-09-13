@@ -73,7 +73,7 @@ SameMultisegment(M, N) ==
 IsLadder(M) ==
     /\ M # EmptyBag
     /\ BagCardinality(M) = Cardinality(BagToSet(M))
-    /\ \E sequence \in Permutations(BagToSet(M)) :
+    /\ \E sequence \in Enumerations(BagToSet(M)) :
         \A i \in 1..(BagCardinality(M) - 1) :
             Precedes(sequence[i], sequence[i + 1])
 
@@ -83,7 +83,7 @@ IsLadder(M) ==
    and the order will be unique *)
 StandardOrder(M) ==
     CHOOSE ordering \in
-        {sequence \in Permutations(BagToSet(M)) :
+        {sequence \in Enumerations(BagToSet(M)) :
             \A i \in
                 1..(Cardinality(BagToSet(M)) - 1) :
                     Before(sequence[i], sequence[i + 1])
@@ -99,10 +99,12 @@ StandardOrder(M) ==
 segmentOf(M, i) ==
     LET
         PrefixOccurrences(j) ==
-            {<<k, r>> :
-                k \in 1..j,
-                r \in 1..M[StandardOrder(M)[k]]
-            }
+    UNION {
+        {<<k, r>> :
+            r \in 1..M[StandardOrder(M)[k]]
+        } :
+        k \in 1..j
+    }
     IN
         CHOOSE s \in BagToSet(M) :
             \E j \in 1..Cardinality(BagToSet(M)) :
@@ -153,7 +155,7 @@ depthGlobalIndices(M, depth) ==
 AdmissibleEnumeration(M, depth) ==
     CHOOSE enumeration \in {
         sequence \in
-            Permutations(depthGlobalIndices(M, depth)) :
+            Enumerations(depthGlobalIndices(M, depth)) :
 
             /\ \A i \in
                 1..(Cardinality(depthGlobalIndices(M, depth)) - 1) :
@@ -270,12 +272,8 @@ LeadingSequence(M) ==
                     FirstCandidate(i)
 
             NextCandidate(i, q) ==
-                /\ Precedes(
-                    segmentOf(M, i),
-                    segmentOf(M, q)
-                )
-                /\ b(segmentOf(M, q))
-                    = b(segmentOf(M, i)) + 1
+                /\ Precedes(segmentOf(M, i), segmentOf(M, q))
+                /\ b(segmentOf(M, q)) = b(segmentOf(M, i)) + 1
 
             NextIndex(i) ==
                 CHOOSE next \in 1..BagCardinality(M) :
@@ -302,15 +300,11 @@ LeadingSequence(M) ==
 
 DeltaCircle(M) ==
     LET
-        k ==
-            Len(LeadingSequence(M))
-
-        FirstSegment ==
-            segmentOf(M, LeadingSequence(M)[1])
+        k == Len(LeadingSequence(M))
     IN
         Segment(
-            b(FirstSegment),
-            e(FirstSegment) + k - 1
+            min(M),
+            min(M) + k - 1
         )
 
 

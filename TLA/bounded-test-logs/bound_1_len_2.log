@@ -1,0 +1,43 @@
+TLC2 Version 2026.09.12.025210 (rev: 867aefb)
+Running breadth-first search Model-Checking with fp 49 and seed -8810002794028901155 with 1 worker on 8 cores with 1732MB heap and 64MB offheap memory [pid: 15502] (Linux 6.18.33.2-microsoft-standard-WSL2 amd64, Ubuntu 17.0.20 64bit, MSBDiskFPSet, DiskStateQueue).
+Parsing file /mnt/c/Users/aslis/OneDrive - mail.tau.ac.il/Weizmann Summer/TLA/Formalized/TLA/BoundedTests.tla
+Parsing file /mnt/c/Users/aslis/OneDrive - mail.tau.ac.il/Weizmann Summer/TLA/Formalized/TLA/FormalizedCorollary.tla
+Parsing file /tmp/tlc-14237093352911062950/_TLCTrace.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/_TLCTrace.tla)
+Parsing file /tmp/tlc-14237093352911062950/Integers.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/Integers.tla)
+Parsing file /tmp/tlc-14237093352911062950/FiniteSets.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/FiniteSets.tla)
+Parsing file /tmp/tlc-14237093352911062950/Sequences.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/Sequences.tla)
+Parsing file /mnt/c/Users/aslis/OneDrive - mail.tau.ac.il/Weizmann Summer/TLA/Formalized/TLA/Utils.tla
+Parsing file /tmp/tlc-14237093352911062950/Naturals.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/Naturals.tla)
+Parsing file /tmp/tlc-14237093352911062950/TLC.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/TLC.tla)
+Parsing file /tmp/tlc-14237093352911062950/TLCExt.tla (jar:file:/mnt/c/Users/aslis/OneDrive%20-%20mail.tau.ac.il/Weizmann%20Summer/TLA/Formalized/TLA/tla2tools.jar!/tla2sany/StandardModules/TLCExt.tla)
+Semantic processing of module Naturals
+Semantic processing of module Integers
+Semantic processing of module Sequences
+Semantic processing of module FiniteSets
+Semantic processing of module Utils
+Semantic processing of module FormalizedCorollary
+Semantic processing of module TLC
+Semantic processing of module TLCExt
+Semantic processing of module _TLCTrace
+Semantic processing of module BoundedTests
+Linting of module Utils
+Linting of module FormalizedCorollary
+Linting of module TLCExt
+Linting of module _TLCTrace
+Linting of module BoundedTests
+Starting... (2026-09-13 14:14:31)
+Computing initial states...
+Computed 2 initial states...
+Computed 4 initial states...
+Computed 8 initial states...
+Computed 16 initial states...
+Computed 32 initial states...
+Finished computing initial states: 42 distinct states generated at 2026-09-13 14:14:32.
+Model checking completed. No error has been found.
+  Estimates of the probability that TLC did not check all reachable states
+  because two distinct states had the same fingerprint:
+  calculated (optimistic):  val = 9.6E-17
+84 states generated, 42 distinct states found, 0 states left on queue.
+The depth of the complete state graph search is 1.
+The average outdegree of the complete state graph is 0 (minimum is 0, the maximum 0 and the 95th percentile is 0).
+Finished in 01s at (2026-09-13 14:14:32)

@@ -8,14 +8,6 @@ set -euo pipefail
 # Example:
 #   bash run_java_random_tests.sh 10000 20 4 2 5 12345
 #
-# Put this script and ComprehensiveRandomTester.java either:
-#   (A) beside Segment.java and MultiSegment.java, or
-#   (B) in the root of a Maven-style project containing
-#       src/main/java/com/salma/Segment.java
-#       src/main/java/com/salma/MultiSegment.java
-#
-# The script tries to locate guava automatically. If it cannot, set:
-#   export GUAVA_JAR=/full/path/to/guava-<version>.jar
 
 if [[ $# -ne 6 ]]; then
     echo "Usage:"

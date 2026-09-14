@@ -11,6 +11,7 @@ Segment(a, b) ==
 Seg ==
     {s \in Int \X Int : s[1] <= s[2]}
 
+
 EmptySeg == <<>> \* the empty segment is not part of Seg
 
 b(s) ==
@@ -71,9 +72,9 @@ IsLadder(M) ==
 
 Depth(M) ==
     LET
-        IsDepthChain(i, j, Chain) ==
+        IsDepthChain(i, d, Chain) ==
             /\ Chain[1] = i                                  \* the chain starts at index i
-            /\ \A r \in 1..j :
+            /\ \A r \in 1..d :
                 Precedes(
                     Delta(M)[Chain[r]],
                     Delta(M)[Chain[r + 1]]
@@ -81,9 +82,9 @@ Depth(M) ==
     IN
         [i \in IndexSet(M) |->
             Max({
-                j \in 0..(Len(M) - 1) :
-                    \E Chain \in [1..(j + 1) -> IndexSet(M)] :
-                        IsDepthChain(i, j, Chain)             \* there exists a chain of length j from i
+                d \in 0..(Len(M) - 1) :
+                    \E Chain \in [1..(d + 1) -> IndexSet(M)] :
+                        IsDepthChain(i, d, Chain)             \* there exists a chain of length j from i
             })
         ]
 

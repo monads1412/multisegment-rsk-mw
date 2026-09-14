@@ -96,19 +96,3 @@ If that fails:
 
 then rerun.
 
-IMPORTANT CURRENT CODE ISSUE
-----------------------------
-Your pasted Segment.subsetEq currently says:
-
-  s1.b <= s2.b && s2.e <= s1.e
-
-That means "s2 is contained in s1".
-
-Your TLA+ SegSubsetEq(s1,s2), and the mathematical meaning used by the tester,
-is "s1 is contained in s2":
-
-  s2.b <= s1.b && s1.e <= s2.e
-
-So the comprehensive tester is expected to fail immediately on subsetEq until
-that method is corrected. This method appears not to be used by MultiSegment,
-so fixing it should not change the rest of the implementation.

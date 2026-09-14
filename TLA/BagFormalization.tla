@@ -120,7 +120,8 @@ FindIndex(M, i) ==
         segmentOf(M, i) = StandardOrder(M)[j]
 
 
-(* depth of the segment at global index i *)
+(* depth of the segment at global index i. 
+   could possibly also use the IsLadder operator instead *)
 d(M, i) ==
     LET
         startIndex ==
@@ -302,10 +303,7 @@ DeltaCircle(M) ==
     LET
         k == Len(LeadingSequence(M))
     IN
-        Segment(
-            min(M),
-            min(M) + k - 1
-        )
+        Segment(min(M), min(M) + k - 1)
 
 
 IStar(M) ==

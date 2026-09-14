@@ -1,0 +1,7 @@
+in this file there are two different implementaitons of this corollary: 
+1. FormalizedCorollary.tla is the implementaion that represents multisegments as a sequence of segments.
+2. BagFormalization.tla is the implementation that represents multisegments as multisets using the Bag module. 
+Necessary and sufficient files in order to understand the formaliations: FormalizedCorollary.tla, BagFormalization.tla, Utils.tla.
+**Utils.tla contains general-purpose and basic functionalities that are used in both implementations. 
+
+all other files are relevant for the testers. 

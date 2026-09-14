@@ -1,0 +1,444 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 24.1) (preloaded format=pdflatex 2026.3.11)  14 SEP 2026 14:29
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**./FormalizedCorollary.tex
+(FormalizedCorollary.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-12-24>
+
+(C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
+Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
+(C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/base\size10.clo
+File: size10.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count275
+\c@section=\count276
+\c@subsection=\count277
+\c@subsubsection=\count278
+\c@paragraph=\count279
+\c@subparagraph=\count280
+\c@figure=\count281
+\c@table=\count282
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen148
+) (C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/graphics\color.sty
+Package: color 2025/01/14 v1.3e Standard LaTeX Color (DPC)
+(C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package color Info: Driver file: pdftex.def on input line 149.
+
+(C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
+) (C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/graphics\mathcolor.lt
+x)) (C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/base\latexsym.sty
+Package: latexsym 1998/08/17 v2.2e Standard LaTeX package (lasy symbols)
+\symlasy=\mathgroup4
+LaTeX Font Info:    Overwriting symbol font `lasy' in version `bold'
+(Font)                  U/lasy/m/n --> U/lasy/b/n on input line 52.
+) (C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/base\ifthen.sty
+Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
+)
+\symlength=\skip51
+\equalswidth=\skip52
+\charwidth=\skip53
+\boxrulewd=\skip54
+\boxlineht=\skip55
+\boxruleht=\skip56
+\boxruledp=\skip57
+\pcalvspace=\skip58
+\lcomindent=\skip59
+\@xlen=\skip60
+\templena=\skip61
+\templenb=\skip62
+\tempboxa=\box53
+\vshadelen=\skip63
+\boxwidth=\skip64
+\multicommentdepth=\skip65
+\c@pardepth=\count283
+\tempsbox=\box54
+\@cparht=\skip66
+\@cpardp=\skip67
+\xmcomlen=\skip68
+\spacewidth=\skip69
+\alignboxwidth=\skip70
+\alignwidth=\skip71
+\alignbox=\box55
+\symtlaitalics=\mathgroup5
+\c@tlx@ctr=\count284
+(C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/tools\verbatim.sty
+Package: verbatim 2024-01-22 v1.5x LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks17
+\verbatim@line=\toks18
+\verbatim@in@stream=\read2
+)
+(C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
+tex.def
+File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count285
+)
+No file FormalizedCorollary.aux.
+\openout1 = `FormalizedCorollary.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 939.
+LaTeX Font Info:    ... okay on input line 939.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 939.
+LaTeX Font Info:    ... okay on input line 939.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 939.
+LaTeX Font Info:    ... okay on input line 939.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 939.
+LaTeX Font Info:    ... okay on input line 939.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 939.
+LaTeX Font Info:    ... okay on input line 939.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 939.
+LaTeX Font Info:    ... okay on input line 939.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 939.
+LaTeX Font Info:    ... okay on input line 939.
+
+(C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
+ii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count286
+\scratchdimen=\dimen149
+\scratchbox=\box56
+\nofMPsegments=\count287
+\nofMParguments=\count288
+\everyMPshowfont=\toks19
+\MPscratchCnt=\count289
+\MPscratchDim=\dimen150
+\MPnumerator=\count290
+\makeMPintoPDFobject=\count291
+\everyMPtoPDFconversion=\toks20
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 942.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 942.
+LaTeX Font Info:    Trying to load font information for U+lasy on input line 94
+2.
+(C:\Users\aslis\AppData\Local\Programs\MiKTeX\tex/latex/base\ulasy.fd
+File: ulasy.fd 1998/08/17 v2.2e LaTeX symbol font definitions
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 972.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 972.
+
+! LaTeX Error: Unicode character ≺ (U+227A)
+               not set up for use with LaTeX.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.993 }}
+        %
+You may provide a definition with
+\DeclareUnicodeCharacter 
+
+
+
+[1
+
+{C:/Users/aslis/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+Overfull \hbox (49.98927pt too wide) in paragraph at lines 1035--1040
+[][][][] 
+ []
+
+
+! LaTeX Error: Unicode character ≺ (U+227A)
+               not set up for use with LaTeX.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1053 }}
+         %
+You may provide a definition with
+\DeclareUnicodeCharacter 
+
+
+Overfull \hbox (12.98152pt too wide) in paragraph at lines 1050--1055
+[][][][] 
+ []
+
+
+Overfull \hbox (30.26556pt too wide) in paragraph at lines 1084--1089
+[][][][] 
+ []
+
+
+Overfull \hbox (44.75746pt too wide) in paragraph at lines 1095--1100
+[][][][] 
+ []
+
+
+
+[2]
+Overfull \hbox (51.1614pt too wide) in paragraph at lines 1150--1155
+[][][][] 
+ []
+
+
+Overfull \hbox (41.8428pt too wide) in paragraph at lines 1157--1162
+[][][][] 
+ []
+
+
+Overfull \hbox (31.75597pt too wide) in paragraph at lines 1172--1177
+[][][][] 
+ []
+
+
+Overfull \hbox (118.35185pt too wide) in paragraph at lines 1178--1183
+[][][][] 
+ []
+
+
+! LaTeX Error: Unicode character ∆ (U+2206)
+               not set up for use with LaTeX.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1193 }}
+         %
+You may provide a definition with
+\DeclareUnicodeCharacter 
+
+
+! LaTeX Error: Unicode character ′ (U+2032)
+               not set up for use with LaTeX.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1193 }}
+         %
+You may provide a definition with
+\DeclareUnicodeCharacter 
+
+
+
+[3]
+Overfull \hbox (31.7404pt too wide) in paragraph at lines 1230--1236
+[][][][] 
+ []
+
+
+Overfull \hbox (118.52057pt too wide) in paragraph at lines 1282--1287
+[][][][] 
+ []
+
+
+Overfull \hbox (2.77145pt too wide) in paragraph at lines 1290--1295
+[][][][] 
+ []
+
+
+Overfull \hbox (97.39981pt too wide) in paragraph at lines 1299--1304
+[][][][] 
+ []
+
+
+
+[4]
+
+! LaTeX Error: Unicode character ≺ (U+227A)
+               not set up for use with LaTeX.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.1310 }}
+         %
+You may provide a definition with
+\DeclareUnicodeCharacter 
+
+
+Overfull \hbox (28.61566pt too wide) in paragraph at lines 1313--1318
+[][][][] 
+ []
+
+
+Overfull \hbox (8.24004pt too wide) in paragraph at lines 1320--1325
+[][][][] 
+ []
+
+
+Overfull \hbox (94.6766pt too wide) in paragraph at lines 1329--1334
+[][][][] 
+ []
+
+
+Overfull \hbox (6.77832pt too wide) in paragraph at lines 1336--1342
+[][][][] 
+ []
+
+
+Overfull \hbox (28.22198pt too wide) in paragraph at lines 1343--1349
+[][][][] 
+ []
+
+
+Overfull \hbox (77.38205pt too wide) in paragraph at lines 1350--1355
+[][][][] 
+ []
+
+
+Overfull \hbox (32.61131pt too wide) in paragraph at lines 1358--1363
+[][][][] 
+ []
+
+
+Overfull \hbox (76.21402pt too wide) in paragraph at lines 1370--1375
+[][][][] 
+ []
+
+
+Overfull \hbox (55.29845pt too wide) in paragraph at lines 1377--1382
+[][][][] 
+ []
+
+
+Overfull \hbox (22.77718pt too wide) in paragraph at lines 1382--1387
+[][][][] 
+ []
+
+
+Overfull \hbox (50.21701pt too wide) in paragraph at lines 1387--1392
+[][][][] 
+ []
+
+
+Overfull \hbox (46.6626pt too wide) in paragraph at lines 1402--1407
+[][][][] 
+ []
+
+
+Overfull \hbox (70.56145pt too wide) in paragraph at lines 1411--1417
+[][][][] 
+ []
+
+
+
+[5]
+Overfull \hbox (17.69034pt too wide) in paragraph at lines 1420--1426
+[][][][] 
+ []
+
+
+Overfull \hbox (53.2088pt too wide) in paragraph at lines 1426--1431
+[][][][] 
+ []
+
+
+Overfull \hbox (81.54933pt too wide) in paragraph at lines 1435--1441
+[][][][] 
+ []
+
+
+Overfull \hbox (46.95888pt too wide) in paragraph at lines 1492--1497
+[][][][] 
+ []
+
+
+Overfull \hbox (22.12903pt too wide) in paragraph at lines 1497--1502
+[][][][] 
+ []
+
+
+Overfull \hbox (41.86105pt too wide) in paragraph at lines 1509--1514
+[][][][] 
+ []
+
+
+Overfull \hbox (77.9578pt too wide) in paragraph at lines 1517--1523
+[][][][] 
+ []
+
+
+
+[6]
+Overfull \hbox (35.60957pt too wide) in paragraph at lines 1551--1556
+[][][][] 
+ []
+
+
+Overfull \hbox (55.52907pt too wide) in paragraph at lines 1566--1571
+[][][][] 
+ []
+
+
+Overfull \hbox (7.52507pt too wide) in paragraph at lines 1580--1585
+[][][][] 
+ []
+
+
+Overfull \hbox (34.01276pt too wide) in paragraph at lines 1585--1590
+[][][][] 
+ []
+
+
+Overfull \hbox (22.53502pt too wide) in paragraph at lines 1590--1595
+[][][][] 
+ []
+
+
+Overfull \hbox (67.87428pt too wide) in paragraph at lines 1604--1610
+[][][][] 
+ []
+
+
+Overfull \hbox (33.56007pt too wide) in paragraph at lines 1646--1651
+[][][][] 
+ []
+
+
+Overfull \hbox (69.9278pt too wide) in paragraph at lines 1654--1660
+[][][][] 
+ []
+
+
+
+[7]
+
+[8] (FormalizedCorollary.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2025-12-24>
+ ***********
+ ) 
+Here is how much of TeX's memory you used:
+ 1389 strings out of 467875
+ 21198 string characters out of 5418463
+ 456733 words of memory out of 5000000
+ 30304 multiletter control sequences out of 15000+600000
+ 632586 words of font info for 59 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 38i,10n,46p,202b,147s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/aslis/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/
+cmcsc10.pfb><C:/Users/aslis/AppData/Local/Programs/MiKTeX/fonts/type1/public/am
+sfonts/cm/cmmi10.pfb><C:/Users/aslis/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/amsfonts/cm/cmmi8.pfb><C:/Users/aslis/AppData/Local/Programs/MiKTeX/font
+s/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/aslis/AppData/Local/Programs/MiK
+TeX/fonts/type1/public/amsfonts/cm/cmr5.pfb><C:/Users/aslis/AppData/Local/Progr
+ams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/aslis/AppData/Loca
+l/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/aslis/App
+Data/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/a
+slis/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:
+/Users/aslis/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti1
+0.pfb><C:/Users/aslis/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts
+/cm/cmti8.pfb>
+Output written on FormalizedCorollary.pdf (8 pages, 149799 bytes).
+PDF statistics:
+ 84 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+

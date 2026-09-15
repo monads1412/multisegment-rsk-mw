@@ -1,3 +1,5 @@
+include "segment.dfy"
+
 module Utils{
 
     function Max(S: set<int>): int
@@ -9,4 +11,10 @@ module Utils{
         x
     }
 
+
+    function SeqToSet(sequence : seq<int>): set<int> {
+        set x: int | x in sequence
+    }
+
+    
 }

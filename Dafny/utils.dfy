@@ -1,14 +1,13 @@
-include "segment.dfy"
-
 module Utils{
 
-    function Max(S: set<int>): int
+    ghost function MaxOf(S: set<int>): int
         requires S != {}
     {
-        var x: int :|
-            x in S &&
-            forall y: int :: y in S ==> y <= x;
-        x
+        var x : int :| x in S;
+        if S == {x} then x
+        else
+            var m := MaxOf(S - {x});
+            if x > m then x else m
     }
 
 

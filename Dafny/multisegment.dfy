@@ -35,24 +35,286 @@ module Multisegment{
 
 
     ghost function bucket(m : Multisegment, k : int): set<int>
-        requires |m| > 0 && 0 <= k <= d(m)
     {
         set index: int | 0 <= index < |m| && depth(index, m) == k
     }
 
 
-    ghost predicate IsAdmissibleEnumeration(m : Multisegment, k : int, enumeration : seq<int>)
+    ghost predicate IsAdmissible(m : Multisegment, k : int, e : seq<int>)
         requires |m| > 0 && 0 <= k <= d(m)
     {
-        SeqToSet(enumeration) == bucket(m, k)
-        && (forall index : int :: 0 <= index < |enumeration| - 1 ==>
-            0 <= enumeration[index] < |m| &&
-            0 <= enumeration[index+1] < |m| &&
-            Precedes(m[enumeration[index+1]], m[enumeration[index]]))
+        SeqToSet(e) == bucket(m, k)
+        && |e| == |bucket(m, k)|
+        && (forall j : int :: 0 <= j < |e| ==> 0 <= e[j] < |m|)
+        && (forall j : int :: 0 <= j < |e| - 1 ==> Precedes(m[e[j+1]], m[e[j]]))
     }
 
-    ghost function {:axiom} AdmissibleEnumeration(m : Multisegment, k : int): (enumeration : seq<int>)
-        requires |m| > 0 && 0 <= k <= d(m)
-        ensures IsAdmissibleEnumeration(m, k, enumeration)
 
+    ghost function {:axiom} AdmissibleEnumeration(m : Multisegment, k : int): (e : seq<int>)
+        ensures SeqToSet(e) == bucket(m, k)
+        ensures |e| == |bucket(m, k)|
+        ensures forall q : int :: 0 <= q < |e| ==> 0 <= e[q] < |m|
+
+
+
+    lemma {:axiom} AdmissibleEnumerationIsAdmissible(m : Multisegment, k : int)
+        requires |m| > 0 && 0 <= k <= d(m)
+        ensures IsAdmissible(m, k, AdmissibleEnumeration(m, k))
+
+
+    ghost function IndexOf(e : seq<int>, x : int): int
+        requires x in e
+        decreases |e|
+    {
+        if e[0] == x then 0
+        else 1 + IndexOf(e[1..], x)
+    }
+
+
+    ghost function {:axiom} Position(m : Multisegment, i : int): (p : int)
+        requires 0 <= i < |m|
+        ensures 0 <= p < |AdmissibleEnumeration(m, depth(i, m))|
+        ensures AdmissibleEnumeration(m, depth(i, m))[p] == i
+
+
+    ghost function IVee(m : Multisegment, i : int): (j : int)
+        requires 0 <= i < |m|
+        ensures 0 <= j < |m|
+    {
+        var e := AdmissibleEnumeration(m, depth(i, m));
+        var p := Position(m, i);
+        if p == |e| - 1 then e[0]
+        else e[p+1]
+    }
+
+
+
+    lemma {:axiom} IVeeRange(m : Multisegment, i : int) 
+        requires 0 <= i < |m|
+        ensures 0 <= IVee(m, i) < |m|
+        ensures m[i].0 <= m[IVee(m, i)].1
+
+
+    ghost function TransformedSegment(m : Multisegment, i : int): Segment
+        requires 0 <= i < |m|
+    {
+        IVeeRange(m, i);
+        (m[i].0, m[IVee(m, i)].1)
+    }
+
+
+
+    lemma {:axiom} DepthExists(m : Multisegment, k : int)
+        requires |m| > 0 && 0 <= k <= d(m)
+        ensures exists i : int :: 0 <= i < |m| && depth(i, m) == k
+
+
+
+    lemma AdmissibleEnumerationNonEmpty(m : Multisegment, k : int)
+        requires |m| > 0 && 0 <= k <= d(m)
+        ensures |AdmissibleEnumeration(m, k)| > 0
+    {
+        DepthExists(m, k);
+
+        var i :| 0 <= i < |m| && depth(i, m) == k;
+
+        assert i in bucket(m, k);
+        assert |bucket(m, k)| > 0;
+
+        var e := AdmissibleEnumeration(m, k);
+        assert |e| == |bucket(m, k)|;
+        assert |e| > 0;
+    }
+
+
+
+    ghost function j(m : Multisegment, k : int): int
+        requires |m| > 0 && 0 <= k <= d(m)
+    {
+        AdmissibleEnumerationNonEmpty(m, k);
+        var e := AdmissibleEnumeration(m, k);
+        e[|e| - 1]
+    }
+
+
+
+    ghost function DistinguishedIndices(m : Multisegment): set<int>
+        requires |m| > 0
+    {
+        set k : int | 0 <= k <= d(m) :: j(m, k)
+    }
+
+
+
+    ghost function RemainingIndices(m : Multisegment): set<int>
+        requires |m| > 0
+    {
+        set k : int | 0 <= k < |m| && k !in DistinguishedIndices(m)
+    }
+
+
+    ghost function HighestLadderFrom(m : Multisegment, i : int): Multisegment
+        requires 0 <= i <= |m|
+        decreases |m| - i
+    {
+        if i == |m| then []
+        else if i in DistinguishedIndices(m) then
+            [TransformedSegment(m, i)] + HighestLadderFrom(m, i + 1)
+        else
+            HighestLadderFrom(m, i + 1)
+    }
+
+    ghost function l(m : Multisegment): Multisegment
+        requires |m| > 0
+    {
+        HighestLadderFrom(m, 0)
+    }
+
+
+
+    ghost function DerivedMultisegmentFrom(m : Multisegment, i : int): Multisegment
+        requires 0 <= i <= |m|
+        decreases |m| - i
+    {
+        if i == |m| then []
+        else if i in RemainingIndices(m) then
+            [TransformedSegment(m, i)] + DerivedMultisegmentFrom(m, i + 1)
+        else
+            DerivedMultisegmentFrom(m, i + 1)
+    }
+
+    ghost function DerivedMultisegment(m : Multisegment): Multisegment
+        requires |m| > 0
+    {
+        DerivedMultisegmentFrom(m, 0)
+    }
+
+
+
+    ghost function K(m : Multisegment): seq<Multisegment>
+        requires |m| > 0
+        {
+            [l(m), DerivedMultisegment(m)]
+        }
+
+
+    ghost predicate IsFirstLeadingIndex(m : Multisegment, i : int)
+    {
+        0 <= i < |m|
+        && (forall r : int :: 0 <= r < |m| ==> m[i].0 <= m[r].0)
+        && (forall r : int :: 0 <= r < |m| && m[r].0 == m[i].0 ==> m[i].1 <= m[r].1)
+    }
+
+
+    ghost function {:axiom} FirstLeadingIndex(m : Multisegment): (i : int)
+        requires |m| > 0
+        ensures IsFirstLeadingIndex(m, i)
+
+    ghost function NextCandidates(m : Multisegment, current : int): set<int>
+        requires 0 <= current < |m|
+    {
+        set i : int |
+            0 <= i < |m|
+            && Precedes(m[current], m[i])
+            && m[i].0 == m[current].0 + 1
+    }
+
+    ghost function {:axiom} NextLeadingIndex(m : Multisegment, current : int): (next : int)
+        requires 0 <= current < |m|
+        requires NextCandidates(m, current) != {}
+        ensures next in NextCandidates(m, current)
+        ensures forall i : int :: i in NextCandidates(m, current) ==> m[next].1 <= m[i].1
+
+
+    ghost function LeadingIndicesFrom(m : Multisegment, current : int, fuel : nat): seq<int>
+        requires 0 <= current < |m|
+        decreases fuel
+    {
+        if fuel == 0 || NextCandidates(m, current) == {} then []
+        else
+            var next := NextLeadingIndex(m, current);
+            [next] + LeadingIndicesFrom(m, next, fuel - 1)
+    }
+
+
+    ghost function LeadingIndices(m : Multisegment): seq<int>
+        requires |m| > 0
+    {
+        var i1 := FirstLeadingIndex(m);
+        [i1] + LeadingIndicesFrom(m, i1, |m| - 1)
+    }
+
+
+    lemma LeadingIndicesNonEmpty(m : Multisegment)
+        requires |m| > 0
+        ensures |LeadingIndices(m)| > 0
+    {
+        var i1 := FirstLeadingIndex(m);
+        assert i1 in LeadingIndices(m);
+    }
+
+
+    ghost function DeltaCircle(m : Multisegment): Segment
+        requires |m| > 0
+    {
+        LeadingIndicesNonEmpty(m);
+        var i1 := FirstLeadingIndex(m);
+        (m[i1].0, m[i1].0 + |LeadingIndices(m)| - 1)
+    }
+
+
+    ghost function DeltaStar(m : Multisegment, i : int): Multisegment
+        requires |m| > 0
+        requires 0 <= i < |m|
+    {
+        if i in LeadingIndices(m) then
+            if m[i].0 == m[i].1 then []
+            else [(m[i].0 + 1, m[i].1)]
+        else
+            [m[i]]
+    }
+
+
+    ghost function MCrossFrom(m : Multisegment, i : int): Multisegment
+        requires |m| > 0
+        requires 0 <= i <= |m|
+        decreases |m| - i
+    {
+        if i == |m| then []
+        else DeltaStar(m, i) + MCrossFrom(m, i + 1)
+    }
+
+
+    ghost function MCross(m : Multisegment): Multisegment
+        requires |m| > 0
+    {
+        MCrossFrom(m, 0)
+    }
+
+
+    ghost function MW(m : Multisegment): (Multisegment, Segment)
+        requires |m| > 0
+        {
+            (MCross(m), DeltaCircle(m))
+        }
+
+
+    ghost function min(m : Multisegment): int
+        requires |m| > 0
+    {
+        m[FirstLeadingIndex(m)].0
+    }
+
+
+
+lemma {:axiom} Corollary(m : Multisegment)
+    requires |m| > 0
+    requires |l(m)| > 0
+    requires min(m) < min(l(m))
+    ensures
+        |DerivedMultisegment(m)| > 0
+        && |MCross(m)| > 0
+        && l(m) == l(MCross(m))
+        && DeltaCircle(m) == DeltaCircle(DerivedMultisegment(m))
+        && DerivedMultisegment(MCross(m)) == MCross(DerivedMultisegment(m))
 }

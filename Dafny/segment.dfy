@@ -1,6 +1,6 @@
 module Segment{
                
-    // defining the type Segment
+    
     type Segment = s : (int, int) | s.0 <= s.1 witness (0, 0)
 
 

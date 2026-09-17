@@ -15,5 +15,40 @@ module Utils{
         set x: int | x in sequence
     }
 
-    
+
+
+
+    /* non-ghost implementation of MaxOf -- function by method:
+
+    function MaxOf(s: set<int>): (m: int)
+    requires s != {}
+    ensures m in s && forall z :: z in s ==> z <= m
+    {
+    var x :| x in s;
+    if s == {x} then
+        x
+    else
+        var s' := s - {x};
+        assert s == s' + {x};
+        var y := MaxOf(s');
+        if x >= y then x else y
+    } by method {
+    m :| m in s;
+    var r := s - {m};
+    while r != {}
+        invariant r < s
+        invariant m in s && forall z :: z in s - r ==> z <= m
+    {
+        var x :| x in r;
+        assert forall z :: z in s - (r - {x}) ==> z in s - r || z == x;
+        r := r - {x};
+        if m < x {
+        m := x;
+        }
+    }
+    assert s - {} == s;
+    }
+
+
+    */ 
 }

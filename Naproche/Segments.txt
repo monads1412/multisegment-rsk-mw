@@ -1,0 +1,291 @@
+% Notation
+
+\newcommand{\Intv}[2]{[#1,#2]}
+\newcommand{\beg}[1]{\mathrm{b}(#1)}
+\newcommand{\fin}[1]{\mathrm{e}(#1)}
+\newcommand{\leftseg}[1]{\overleftarrow{#1}}
+\newcommand{\minusseg}[1]{{}^{-}\!#1}
+\newcommand{\Seg}{\mathrm{Seg}}
+\newcommand{\segprec}{\mathrel{\prec}}
+
+
+\begin{forthel}
+
+
+% ------------------------------------------------------------
+% Basic set notation
+% ------------------------------------------------------------
+
+Let $u,v,w$ denote mathematical objects.
+
+
+\begin{definition}
+
+$\emptyset = \{u | u \neq u\}$.
+
+\end{definition}
+
+
+Let the empty set denote $\emptyset$.
+
+
+\begin{axiom}[Set Existence]
+
+$\emptyset$ is a set.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Separation
+% ------------------------------------------------------------
+
+\begin{axiom}[Separation]
+
+Let $X$ be a set.
+Let $Y$ be a class such that every element
+of $Y$ is an element of $X$.
+
+Then $Y$ is a set.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Integers
+% ------------------------------------------------------------
+
+[synonym integer/-s]
+
+
+\begin{signature}
+
+An integer is a mathematical object.
+
+\end{signature}
+
+
+Let $a,b,c,n$ denote integers.
+
+
+\begin{definition}
+
+$\mathbb{Z}$ is the collection of integers.
+
+\end{definition}
+
+
+\begin{axiom}
+
+$\mathbb{Z}$ is a set.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Natural numbers and integer arithmetic
+% ------------------------------------------------------------
+
+[synonym number/-s]
+
+
+\begin{signature}
+
+A natural number is an integer.
+
+\end{signature}
+
+
+Let $k$ denote a natural number.
+
+
+\begin{signature}
+
+$1$ is a natural number.
+
+\end{signature}
+
+
+\begin{signature}
+
+$a + b$ is an integer.
+
+\end{signature}
+
+
+\begin{signature}
+
+$a - b$ is an integer.
+
+\end{signature}
+
+
+\begin{definition}
+
+$a \leq b$ iff
+there exists a natural number $k$ such that
+$a + k = b$.
+
+\end{definition}
+
+
+Let $a < b$ stand for
+$a \leq b$ and $a \neq b$.
+
+
+% ------------------------------------------------------------
+% Order properties
+% ------------------------------------------------------------
+
+\begin{axiom}
+
+If $a \leq b \leq c$ then
+$a \leq c$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Integer intervals
+% ------------------------------------------------------------
+
+\begin{definition}
+
+$\Intv{a}{b}$ is the collection of integers $n$ such that
+$a \leq n \leq b$.
+
+\end{definition}
+
+
+\begin{lemma}
+
+$\Intv{a}{b}$ is a set.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% Empty reversed interval
+% ------------------------------------------------------------
+
+\begin{axiom}
+
+$\Intv{a+1}{a} = \emptyset$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Segments
+% ------------------------------------------------------------
+
+[synonym segment/-s]
+
+
+\begin{definition}
+
+A segment is a set $\Delta$ such that
+there exists an integer $a$ such that
+there exists an integer $b$ such that
+$a \leq b$ and
+$\Delta = \Intv{a}{b}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Beginning and end of a segment
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $\Delta$ be a segment.
+
+\beg{\Delta} is an integer $a$ such that
+there exists an integer $b$ such that
+$a \leq b$ and
+$\Delta = \Intv{a}{b}$.
+
+\end{definition}
+
+
+\begin{definition}
+
+Let $\Delta$ be a segment.
+
+\fin{\Delta} is an integer $b$ such that
+there exists an integer $a$ such that
+$a \leq b$ and
+$\Delta = \Intv{a}{b}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% The two segment operations
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $\Delta$ be a segment.
+
+$\leftseg{\Delta}
+=
+\Intv{\beg{\Delta}-1}{\fin{\Delta}-1}$.
+
+\end{definition}
+
+
+\begin{definition}
+
+Let $\Delta$ be a segment.
+
+$\minusseg{\Delta}
+=
+\Intv{\beg{\Delta}+1}{\fin{\Delta}}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Degenerate segment
+% ------------------------------------------------------------
+
+\begin{lemma}
+
+Let $\Delta$ be a segment.
+
+If $\beg{\Delta} = \fin{\Delta}$ then
+$\minusseg{\Delta} = \emptyset$.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% The collection Seg
+% ------------------------------------------------------------
+
+\begin{definition}
+
+\Seg is the collection of segments.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Order on segments
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $\Delta$ be a segment.
+Let $\Gamma$ be a segment.
+
+$\Delta \segprec \Gamma$ iff
+$\beg{\Delta} < \beg{\Gamma}$ and
+$\fin{\Delta} < \fin{\Gamma}$.
+
+\end{definition}
+
+
+\end{forthel}

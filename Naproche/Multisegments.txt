@@ -1,0 +1,1347 @@
+% ------------------------------------------------------------
+% Notation
+% ------------------------------------------------------------
+
+\newcommand{\Intv}[2]{[#1,#2]}
+\newcommand{\beg}[1]{\mathrm{b}(#1)}
+\newcommand{\fin}[1]{\mathrm{e}(#1)}
+\newcommand{\leftseg}[1]{\overleftarrow{#1}}
+\newcommand{\minusseg}[1]{{}^{-}\!#1}
+\newcommand{\Seg}{\mathrm{Seg}}
+\newcommand{\segprec}{\mathrel{\prec}}
+\newcommand{\Nat}{\mathbb{N}}
+\newcommand{\Size}[1]{\operatorname{size}(#1)}
+\newcommand{\Ind}[1]{I(#1)}
+
+% ------------------------------------------------------------
+% Indexed segments
+% ------------------------------------------------------------
+
+\newcommand{\DeltaAt}[2]{\Delta^{#1}_{#2}}
+
+% ------------------------------------------------------------
+% Chain machinery
+% ------------------------------------------------------------
+
+\newcommand{\ValidPos}[2]{V(#1,#2)}
+\newcommand{\StepPos}[1]{S(#1)}
+\newcommand{\GoodSteps}[2]{G(#1,#2)}
+\newcommand{\ChainLengths}[2]{J(#1,#2)}
+
+% ------------------------------------------------------------
+% Depth
+% ------------------------------------------------------------
+
+\newcommand{\NatBelow}[1]{B(#1)}
+\newcommand{\DepthAt}[2]{d_{#1}(#2)}
+\newcommand{\DepthValues}[1]{D(#1)}
+\newcommand{\Depth}[1]{d(#1)}
+\newcommand{\DepthFiber}[2]{I^{#1}_{#2}}
+
+% ------------------------------------------------------------
+% Admissible enumerations
+% ------------------------------------------------------------
+
+\newcommand{\FiberLength}[2]{\ell_{#1}(#2)}
+\newcommand{\EnumAt}[3]{\iota_{#1,#2}(#3)}
+
+% ------------------------------------------------------------
+% Distinguished and remaining indices
+% ------------------------------------------------------------
+
+\newcommand{\JIndex}[2]{j^{#1}_{#2}}
+\newcommand{\DistinguishedIndices}[1]{I'(#1)}
+\newcommand{\RemainingIndices}[1]{I''(#1)}
+
+% ------------------------------------------------------------
+% The permutation i to i^vee
+% ------------------------------------------------------------
+
+\newcommand{\IVee}[2]{#2^{\vee}_{#1}}
+
+% ------------------------------------------------------------
+% Transformed segments
+% ------------------------------------------------------------
+
+\newcommand{\DeltaPrimeAt}[2]{{\Delta'}^{#1}_{#2}}
+
+% ------------------------------------------------------------
+% The ladder l(m)
+% ------------------------------------------------------------
+
+\newcommand{\LadderPart}[1]{l(#1)}
+
+% ------------------------------------------------------------
+% The derived multisegment m'
+% ------------------------------------------------------------
+
+\newcommand{\RemainingLength}[1]{q(#1)}
+\newcommand{\RemainingEnumAt}[2]{\rho_{#1}(#2)}
+\newcommand{\DerivedPart}[1]{#1^{\prime}}
+
+\newcommand{\dom}{\operatorname{dom}}
+
+
+\begin{forthel}
+
+
+% ------------------------------------------------------------
+% Basic set notation
+% ------------------------------------------------------------
+
+Let $u,v,w$ denote mathematical objects.
+
+
+\begin{definition}
+
+$\emptyset = \{u | u \neq u\}$.
+
+\end{definition}
+
+
+Let the empty set denote $\emptyset$.
+
+
+\begin{axiom}[Set Existence]
+
+$\emptyset$ is a set.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Subsets
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $C$ be a class.
+
+A subset of $C$ is a set $X$ such that
+every element of $X$ is an element of $C$.
+
+\end{definition}
+
+
+Let $X \subseteq C$ stand for
+$X$ is a subset of $C$.
+
+
+% ------------------------------------------------------------
+% Separation
+% ------------------------------------------------------------
+
+\begin{axiom}[Separation]
+
+Let $X$ be a set.
+Let $Y$ be a class such that every element
+of $Y$ is an element of $X$.
+
+Then $Y$ is a set.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Integers
+% ------------------------------------------------------------
+
+[synonym integer/-s]
+
+
+\begin{signature}
+
+An integer is a mathematical object.
+
+\end{signature}
+
+
+Let $a,b,c,n$ denote integers.
+
+
+\begin{definition}
+
+$\mathbb{Z}$ is the collection of integers.
+
+\end{definition}
+
+
+\begin{axiom}
+
+$\mathbb{Z}$ is a set.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Natural numbers and integer arithmetic
+% ------------------------------------------------------------
+
+[synonym number/-s]
+
+
+\begin{signature}
+
+A natural number is an integer.
+
+\end{signature}
+
+
+Let $k,r,s$ denote natural numbers.
+
+
+\begin{definition}
+
+\Nat is the collection of natural numbers.
+
+\end{definition}
+
+
+\begin{axiom}
+
+\Nat is a set.
+
+\end{axiom}
+
+
+\begin{signature}
+
+$0$ is a natural number.
+
+\end{signature}
+
+
+\begin{signature}
+
+$1$ is a natural number.
+
+\end{signature}
+
+
+\begin{signature}
+
+$a + b$ is an integer.
+
+\end{signature}
+
+
+\begin{signature}
+
+$a - b$ is an integer.
+
+\end{signature}
+
+
+\begin{axiom}
+
+Let $r,s$ be natural numbers.
+
+$r+s$ is a natural number.
+
+\end{axiom}
+
+
+\begin{definition}
+
+$a \leq b$ iff
+there exists a natural number $k$ such that
+$a + k = b$.
+
+\end{definition}
+
+
+Let $a < b$ stand for
+$a \leq b$ and $a \neq b$.
+
+
+% ------------------------------------------------------------
+% Order properties
+% ------------------------------------------------------------
+
+\begin{axiom}
+
+If $a \leq b \leq c$ then
+$a \leq c$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Integer intervals
+% ------------------------------------------------------------
+
+\begin{definition}
+
+$\Intv{a}{b}$ is the collection of integers $n$ such that
+$a \leq n \leq b$.
+
+\end{definition}
+
+
+\begin{lemma}
+
+$\Intv{a}{b}$ is a set.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% Empty reversed interval
+% ------------------------------------------------------------
+
+\begin{axiom}
+
+$\Intv{a+1}{a} = \emptyset$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Segments
+% ------------------------------------------------------------
+
+[synonym segment/-s]
+
+
+\begin{definition}
+
+A segment is a set $\Delta$ such that
+there exists an integer $a$ such that
+there exists an integer $b$ such that
+$a \leq b$ and
+$\Delta = \Intv{a}{b}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Beginning and end of a segment
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $\Delta$ be a segment.
+
+\beg{\Delta} is an integer $a$ such that
+there exists an integer $b$ such that
+$a \leq b$ and
+$\Delta = \Intv{a}{b}$.
+
+\end{definition}
+
+
+\begin{definition}
+
+Let $\Delta$ be a segment.
+
+\fin{\Delta} is an integer $b$ such that
+there exists an integer $a$ such that
+$a \leq b$ and
+$\Delta = \Intv{a}{b}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% The two segment operations
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $\Delta$ be a segment.
+
+$\leftseg{\Delta}
+=
+\Intv{\beg{\Delta}-1}{\fin{\Delta}-1}$.
+
+\end{definition}
+
+
+\begin{definition}
+
+Let $\Delta$ be a segment.
+
+$\minusseg{\Delta}
+=
+\Intv{\beg{\Delta}+1}{\fin{\Delta}}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Degenerate segment
+% ------------------------------------------------------------
+
+\begin{lemma}
+
+Let $\Delta$ be a segment.
+
+If $\beg{\Delta} = \fin{\Delta}$ then
+$\minusseg{\Delta} = \emptyset$.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% The collection Seg
+% ------------------------------------------------------------
+
+\begin{definition}
+
+\Seg is the collection of segments.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Order on segments
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $\Delta$ be a segment.
+Let $\Gamma$ be a segment.
+
+$\Delta \segprec \Gamma$ iff
+$\beg{\Delta} < \beg{\Gamma}$ and
+$\fin{\Delta} < \fin{\Gamma}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Multisegments
+% ------------------------------------------------------------
+
+[synonym multisegment/-s]
+
+
+\begin{signature}
+
+A multisegment is a mathematical object.
+
+\end{signature}
+
+
+Let $m$ denote a multisegment.
+
+
+% ------------------------------------------------------------
+% Number of indexed occurrences
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment.
+
+$\Size{m}$ is a natural number.
+
+\end{signature}
+
+
+% ------------------------------------------------------------
+% Index set
+% ------------------------------------------------------------
+
+Let $i,j$ denote natural numbers.
+
+
+\begin{definition}
+
+Let $m$ be a multisegment.
+
+$\Ind{m}$ is the collection of natural numbers $i$ such that
+$1 \leq i \leq \Size{m}$.
+
+\end{definition}
+
+
+\begin{lemma}
+
+Let $m$ be a multisegment.
+
+$\Ind{m}$ is a set.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% Indexed segments
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment.
+Let $i$ be an element of $\Ind{m}$.
+
+$\DeltaAt{m}{i}$ is a segment.
+
+\end{signature}
+
+
+% ------------------------------------------------------------
+% Functions
+% ------------------------------------------------------------
+
+Let $C$ denote a mathematical object.
+
+
+\begin{proposition}
+
+Assume that $C$ is a map and $u \in \dom(C)$.
+
+Then $C(u)$ is a mathematical object.
+
+\end{proposition}
+
+
+\begin{axiom}
+
+Assume that $C$ is a function.
+
+Then $\dom(C)$ is a set.
+
+\end{axiom}
+
+
+Let the domain of $C$ denote $\dom(C)$.
+
+
+% ------------------------------------------------------------
+% Positions carrying valid indices
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $m$ be a multisegment.
+Let $C$ be a function.
+
+$\ValidPos{m}{C}$ is the collection of mathematical objects $u$ such that
+$u \in \dom(C)$ and
+$C(u) \in \Ind{m}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Positions having a successor in the chain
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $C$ be a function.
+
+$\StepPos{C}$ is the collection of natural numbers $r$ such that
+$r \in \dom(C)$ and
+$r+1 \in \dom(C)$.
+
+\end{definition}
+
+
+\begin{lemma}
+
+Let $C$ be a function.
+
+$\StepPos{C}$ is a set.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% Positions at which the segment chain condition holds
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $m$ be a multisegment.
+Let $C$ be a function.
+
+$\GoodSteps{m}{C}$ is the collection of natural numbers $r$ such that
+$r \in \StepPos{C}$ and
+$C(r) \in \Ind{m}$ and
+$C(r+1) \in \Ind{m}$ and
+$\beg{\DeltaAt{m}{C(r)}} < \beg{\DeltaAt{m}{C(r+1)}}$ and
+$\fin{\DeltaAt{m}{C(r)}} < \fin{\DeltaAt{m}{C(r+1)}}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Possible chain lengths
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $m$ be a multisegment.
+Let $i$ be an element of $\Ind{m}$.
+
+$\ChainLengths{m}{i}$ is the collection of natural numbers $j$ such that
+there exists a function $C$ such that
+$\dom(C) = \Intv{0}{j}$ and
+$0 \in \dom(C)$ and
+$C(0) = i$ and
+$\dom(C) \subseteq \ValidPos{m}{C}$ and
+$\StepPos{C} \subseteq \GoodSteps{m}{C}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Natural numbers bounded above by k
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $k$ be a natural number.
+
+$\NatBelow{k}$ is the collection of natural numbers $r$ such that
+$r \leq k$.
+
+\end{definition}
+
+
+\begin{lemma}
+
+Let $k$ be a natural number.
+
+$\NatBelow{k}$ is a set.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% Depth of an index
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $m$ be a multisegment.
+Let $i$ be an element of $\Ind{m}$.
+
+$\DepthAt{m}{i}$ is a natural number $k$ such that
+$k \in \ChainLengths{m}{i}$ and
+$\ChainLengths{m}{i} \subseteq \NatBelow{k}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Depth values of a multisegment
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $m$ be a multisegment.
+
+$\DepthValues{m}$ is the collection of natural numbers $k$ such that
+there exists an element $i$ of $\Ind{m}$ such that
+$k = \DepthAt{m}{i}$.
+
+\end{definition}
+
+
+\begin{lemma}
+
+Let $m$ be a multisegment.
+
+$\DepthValues{m}$ is a set.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% Global depth of a multisegment
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $m$ be a multisegment such that
+$\DepthValues{m} \neq \emptyset$.
+
+$\Depth{m}$ is a natural number $k$ such that
+$k \in \DepthValues{m}$ and
+$\DepthValues{m} \subseteq \NatBelow{k}$.
+
+\end{definition}
+
+
+% ------------------------------------------------------------
+% Depth fibres
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number.
+
+$\DepthFiber{m}{k}$ is the collection of natural numbers $i$ such that
+$i \in \Ind{m}$ and
+$\DepthAt{m}{i} = k$.
+
+\end{definition}
+
+
+\begin{lemma}
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number.
+
+$\DepthFiber{m}{k}$ is a set.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% Same-depth nesting
+% ------------------------------------------------------------
+
+\begin{axiom}[Same Depth Nesting]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number.
+Let $i,j$ be elements of $\DepthFiber{m}{k}$.
+
+$\DeltaAt{m}{i} \subseteq \DeltaAt{m}{j}$ or
+$\DeltaAt{m}{j} \subseteq \DeltaAt{m}{i}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Length of an admissible enumeration
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+
+$\FiberLength{m}{k}$ is a natural number.
+
+\end{signature}
+
+
+\begin{axiom}[Positive Enumeration Length]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+
+$1 \leq \FiberLength{m}{k}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Entries of an admissible enumeration
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+Let $r$ be a natural number.
+
+$\EnumAt{m}{k}{r}$ is a natural number.
+
+\end{signature}
+
+
+% ------------------------------------------------------------
+% Every enumeration entry belongs to the depth fibre
+% ------------------------------------------------------------
+
+\begin{axiom}[Enumeration Entries]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+Let $r$ be a natural number such that
+$1 \leq r \leq \FiberLength{m}{k}$.
+
+$\EnumAt{m}{k}{r} \in \DepthFiber{m}{k}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Every element of the depth fibre occurs in the enumeration
+% ------------------------------------------------------------
+
+\begin{axiom}[Enumeration Coverage]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+Let $i$ be an element of $\DepthFiber{m}{k}$.
+
+There exists a natural number $r$ such that
+$1 \leq r \leq \FiberLength{m}{k}$ and
+$\EnumAt{m}{k}{r} = i$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% No index occurs twice in the enumeration
+% ------------------------------------------------------------
+
+\begin{axiom}[Enumeration Injectivity]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+Let $r,s$ be natural numbers such that
+$1 \leq r \leq \FiberLength{m}{k}$ and
+$1 \leq s \leq \FiberLength{m}{k}$.
+
+If $\EnumAt{m}{k}{r} = \EnumAt{m}{k}{s}$ then
+$r = s$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Admissibility condition
+% ------------------------------------------------------------
+
+\begin{axiom}[Admissible Enumeration]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+Let $r$ be a natural number such that
+$1 \leq r < \FiberLength{m}{k}$.
+
+Assume that
+$\EnumAt{m}{k}{r} \in \DepthFiber{m}{k}$.
+
+Assume that
+$\EnumAt{m}{k}{r+1} \in \DepthFiber{m}{k}$.
+
+Then
+$\DeltaAt{m}{\EnumAt{m}{k}{r+1}}
+\subseteq
+\DeltaAt{m}{\EnumAt{m}{k}{r}}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Final index j_k of an admissible enumeration
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+
+$\JIndex{m}{k}$ is a natural number.
+
+\end{signature}
+
+
+\begin{axiom}[Final Enumeration Index]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+
+$\JIndex{m}{k}
+=
+\EnumAt{m}{k}{\FiberLength{m}{k}}$.
+
+\end{axiom}
+
+
+\begin{axiom}[Final Index Membership]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+
+$\JIndex{m}{k} \in \DepthFiber{m}{k}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Every occurring depth has a nonempty fibre
+% ------------------------------------------------------------
+
+\begin{lemma}
+
+Let $m$ be a multisegment.
+Let $k$ be an element of $\DepthValues{m}$.
+
+$\DepthFiber{m}{k} \neq \emptyset$.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% Distinguished indices I'
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $m$ be a multisegment.
+
+$\DistinguishedIndices{m}$ is the collection of natural numbers $i$ such that
+$i \in \Ind{m}$ and
+there exists a natural number $k$ such that
+$k \in \DepthValues{m}$ and
+$\DepthFiber{m}{k} \neq \emptyset$ and
+$i = \JIndex{m}{k}$.
+
+\end{definition}
+
+
+\begin{lemma}
+
+Let $m$ be a multisegment.
+
+$\DistinguishedIndices{m}$ is a set.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% Remaining indices I''
+% ------------------------------------------------------------
+
+\begin{definition}
+
+Let $m$ be a multisegment.
+
+$\RemainingIndices{m}$ is the collection of natural numbers $i$ such that
+$i \in \Ind{m}$ and
+$i \notin \DistinguishedIndices{m}$.
+
+\end{definition}
+
+
+\begin{lemma}
+
+Let $m$ be a multisegment.
+
+$\RemainingIndices{m}$ is a set.
+
+\end{lemma}
+
+
+% ------------------------------------------------------------
+% The permutation i to i^vee
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment.
+Let $i$ be an element of $\Ind{m}$.
+
+$\IVee{m}{i}$ is a natural number.
+
+\end{signature}
+
+
+\begin{axiom}[Vee Preserves Depth Fibre]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number.
+Let $i$ be an element of $\DepthFiber{m}{k}$.
+
+$\IVee{m}{i} \in \DepthFiber{m}{k}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Successor inside an admissible enumeration
+% ------------------------------------------------------------
+
+\begin{axiom}[Vee Successor]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+Let $r$ be a natural number such that
+$1 \leq r < \FiberLength{m}{k}$.
+
+Assume that
+$\EnumAt{m}{k}{r} \in \DepthFiber{m}{k}$.
+
+Assume that
+$\EnumAt{m}{k}{r+1} \in \DepthFiber{m}{k}$.
+
+Then
+$\IVee{m}{\EnumAt{m}{k}{r}}
+=
+\EnumAt{m}{k}{r+1}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% The final index cycles back to the first index
+% ------------------------------------------------------------
+
+\begin{axiom}[Vee Wrap Around]
+
+Let $m$ be a multisegment.
+Let $k$ be a natural number such that
+$\DepthFiber{m}{k} \neq \emptyset$.
+
+Assume that
+$\JIndex{m}{k} \in \DepthFiber{m}{k}$.
+
+Assume that
+$\EnumAt{m}{k}{1} \in \DepthFiber{m}{k}$.
+
+Then
+$\IVee{m}{\JIndex{m}{k}}
+=
+\EnumAt{m}{k}{1}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% i to i^vee is injective
+% ------------------------------------------------------------
+
+\begin{axiom}[Vee Injectivity]
+
+Let $m$ be a multisegment.
+Let $i,j$ be elements of $\Ind{m}$.
+
+If
+$\IVee{m}{i} = \IVee{m}{j}$
+then
+$i = j$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% i to i^vee maps the index set onto itself
+% ------------------------------------------------------------
+
+\begin{axiom}[Vee Surjectivity]
+
+Let $m$ be a multisegment.
+Let $j$ be an element of $\Ind{m}$.
+
+There exists an element $i$ of $\Ind{m}$ such that
+$\IVee{m}{i} = j$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Transformed segments Delta'_i
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment.
+Let $i$ be an element of $\Ind{m}$.
+
+$\DeltaPrimeAt{m}{i}$ is a segment.
+
+\end{signature}
+
+
+\begin{axiom}[Transformed Segment]
+
+Let $m$ be a multisegment.
+Let $i$ be an element of $\Ind{m}$.
+
+$\DeltaPrimeAt{m}{i}
+=
+\Intv
+{\beg{\DeltaAt{m}{i}}}
+{\fin{\DeltaAt{m}{\IVee{m}{i}}}}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Beginning of a transformed segment
+% ------------------------------------------------------------
+
+\begin{axiom}[Transformed Segment Beginning]
+
+Let $m$ be a multisegment.
+Let $i$ be an element of $\Ind{m}$.
+
+$\beg{\DeltaPrimeAt{m}{i}}
+=
+\beg{\DeltaAt{m}{i}}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% End of a transformed segment
+% ------------------------------------------------------------
+
+\begin{axiom}[Transformed Segment End]
+
+Let $m$ be a multisegment.
+Let $i$ be an element of $\Ind{m}$.
+
+$\fin{\DeltaPrimeAt{m}{i}}
+=
+\fin{\DeltaAt{m}{\IVee{m}{i}}}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Occurring depths are 0,...,d(m)
+% ------------------------------------------------------------
+
+\begin{axiom}[Depth Values Form an Interval]
+
+Let $m$ be a multisegment such that
+$\DepthValues{m} \neq \emptyset$.
+
+$\DepthValues{m}
+=
+\Intv{0}{\Depth{m}}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% The ladder l(m)
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment such that
+$\DepthValues{m} \neq \emptyset$.
+
+$\LadderPart{m}$ is a multisegment.
+
+\end{signature}
+
+
+% ------------------------------------------------------------
+% l(m) has one segment for each depth
+% ------------------------------------------------------------
+
+\begin{axiom}[Ladder Size]
+
+Let $m$ be a multisegment such that
+$\DepthValues{m} \neq \emptyset$.
+
+$\Size{\LadderPart{m}}
+=
+\Depth{m}+1$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Depth k corresponds to index k+1 in l(m)
+% ------------------------------------------------------------
+
+\begin{axiom}[Ladder Index]
+
+Let $m$ be a multisegment such that
+$\DepthValues{m} \neq \emptyset$.
+Let $k$ be an element of $\DepthValues{m}$.
+
+$k+1 \in \Ind{\LadderPart{m}}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% The kth ladder segment is Delta'_{j_k}
+% ------------------------------------------------------------
+
+\begin{axiom}[Ladder Entry]
+
+Let $m$ be a multisegment such that
+$\DepthValues{m} \neq \emptyset$.
+Let $k$ be an element of $\DepthValues{m}$.
+
+Assume that
+$k+1 \in \Ind{\LadderPart{m}}$.
+
+Assume that
+$\DepthFiber{m}{k} \neq \emptyset$.
+
+Then
+$\DeltaAt{\LadderPart{m}}{k+1}
+=
+\DeltaPrimeAt{m}{\JIndex{m}{k}}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Length of an enumeration of I''
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment.
+
+$\RemainingLength{m}$ is a natural number.
+
+\end{signature}
+
+
+\begin{axiom}[Empty Remaining Enumeration]
+
+Let $m$ be a multisegment.
+
+If
+$\RemainingIndices{m} = \emptyset$
+then
+$\RemainingLength{m} = 0$.
+
+\end{axiom}
+
+
+\begin{axiom}[Positive Remaining Enumeration Length]
+
+Let $m$ be a multisegment.
+
+If
+$\RemainingIndices{m} \neq \emptyset$
+then
+$1 \leq \RemainingLength{m}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Enumeration of I''
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment.
+Let $r$ be a natural number.
+
+$\RemainingEnumAt{m}{r}$ is a natural number.
+
+\end{signature}
+
+
+% ------------------------------------------------------------
+% Every enumeration entry belongs to I''
+% ------------------------------------------------------------
+
+\begin{axiom}[Remaining Enumeration Entries]
+
+Let $m$ be a multisegment.
+Let $r$ be a natural number such that
+$1 \leq r \leq \RemainingLength{m}$.
+
+$\RemainingEnumAt{m}{r}
+\in
+\RemainingIndices{m}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% Every element of I'' occurs
+% ------------------------------------------------------------
+
+\begin{axiom}[Remaining Enumeration Coverage]
+
+Let $m$ be a multisegment.
+Let $i$ be an element of $\RemainingIndices{m}$.
+
+There exists a natural number $r$ such that
+$1 \leq r \leq \RemainingLength{m}$ and
+$\RemainingEnumAt{m}{r} = i$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% No index of I'' occurs twice
+% ------------------------------------------------------------
+
+\begin{axiom}[Remaining Enumeration Injectivity]
+
+Let $m$ be a multisegment.
+Let $r,s$ be natural numbers such that
+$1 \leq r \leq \RemainingLength{m}$ and
+$1 \leq s \leq \RemainingLength{m}$.
+
+If
+$\RemainingEnumAt{m}{r}
+=
+\RemainingEnumAt{m}{s}$
+then
+$r = s$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% The derived multisegment m'
+% ------------------------------------------------------------
+
+\begin{signature}
+
+Let $m$ be a multisegment.
+
+$\DerivedPart{m}$ is a multisegment.
+
+\end{signature}
+
+
+% ------------------------------------------------------------
+% m' has one entry for every index in I''
+% ------------------------------------------------------------
+
+\begin{axiom}[Derived Multisegment Size]
+
+Let $m$ be a multisegment.
+
+$\Size{\DerivedPart{m}}
+=
+\RemainingLength{m}$.
+
+\end{axiom}
+
+
+% ------------------------------------------------------------
+% The entries of m' are the transformed segments Delta'_i
+% for i in I''
+% ------------------------------------------------------------
+
+\begin{axiom}[Derived Multisegment Entry]
+
+Let $m$ be a multisegment.
+Let $r$ be an element of $\Ind{\DerivedPart{m}}$.
+
+Assume that
+$\RemainingIndices{m} \neq \emptyset$.
+
+Assume that
+$\RemainingEnumAt{m}{r}
+\in
+\RemainingIndices{m}$.
+
+Then
+$\DeltaAt{\DerivedPart{m}}{r}
+=
+\DeltaPrimeAt{m}{\RemainingEnumAt{m}{r}}$.
+
+\end{axiom}
+
+
+\end{forthel}

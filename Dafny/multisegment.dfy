@@ -8,7 +8,9 @@ module Multisegment{
     type Multisegment = seq<Segment>
 
 
-    ghost predicate IsLadder(m : Multisegment){
+    ghost predicate IsLadder(m : Multisegment)
+        requires |m| > 0
+    {
         exists enumeration : Multisegment :: 
             multiset(enumeration) == multiset(m) &&         //multiset is a built-in function. initialization looks like: multiset{1, 2, 1, 3}
             |enumeration| == |m| &&
@@ -18,13 +20,16 @@ module Multisegment{
     }
 
 
-
     ghost function depth(i : int, m : Multisegment): int
         requires 0 <= i < |m|
     {
-        MaxOf({0} + (set j: int | 0 <= j < |m| &&                   //{0} is artifically added because we need to satisfy the precondition of MaxOf which asserts that the set is nonempty
-            exists s: seq<Segment> :: |s| == j + 1 && 
-            multiset(s) <= multiset(m) && IsLadder(s) && s[0] == m[i]))
+        MaxOf({0} + (set j : int | 0 <= j < |m| &&                  //{0} is artifically added because we need to satisfy the precondition of MaxOf which asserts that the set is nonempty
+            exists s : seq<Segment> ::
+                |s| == j + 1 &&
+                multiset(s) <= multiset(m) &&
+                s[0] == m[i] &&
+                forall r : int ::
+                    0 <= r < |s| - 1 ==> Precedes(s[r], s[r+1])))
     }
 
 
@@ -50,14 +55,14 @@ module Multisegment{
         SeqToSet(enumeration) == bucket(m, k)         //SeqToSet is a function from utils -- check if the enumeration indices are those of the bucket's
         && |enumeration| == |bucket(m, k)|              //making sure enumeration does not have duplicates
         && (forall j : int :: 0 <= j < |enumeration| ==> 0 <= enumeration[j] < |m|)     //making sure enumeration is a sequence of indices into m (none out-of-range)
-        && (forall j : int :: 0 <= j < |enumeration| - 1 ==> Precedes(m[enumeration[j+1]], m[enumeration[j]]))
+        && (forall j : int :: 0 <= j < |enumeration| - 1 ==> SegSubsetEq(m[enumeration[j]], m[enumeration[j+1]]))
     }
 
 
 
-    ghost function {:axiom} AdmissibleEnumeration(m : Multisegment, k : int): (e : seq<int>)  //a function with the following postconditions exists
+    ghost function {:axiom} AdmissibleEnumeration(m : Multisegment, k : int): (e : seq<int>)   // chooses an admissible enumeration of the depth-k fiber
         requires |m| > 0 && 0 <= k <= d(m)
-        ensures IsAdmissible(m, k, AdmissibleEnumeration(m, k))
+        ensures IsAdmissible(m, k, e)
 
 
 
@@ -70,11 +75,23 @@ module Multisegment{
     }
 
 
-    //returns the position of the index i inside the admissible enumeration of its own depth bucket.
-    ghost function {:axiom} Position(m : Multisegment, i : int): (p : int)
+    //returns the position of the index i inside the admissible enumeration of its own depth bucket. -- had to split into smaller functions because the verifier was timing out.
+    ghost function Position(m : Multisegment, i : int): (p : int)
         requires 0 <= i < |m| && 0 <= depth(i, m) <= d(m)
         ensures 0 <= p < |AdmissibleEnumeration(m, depth(i, m))|
         ensures AdmissibleEnumeration(m, depth(i, m))[p] == i
+    {
+        var e := AdmissibleEnumeration(m, depth(i, m));
+
+        assert i in bucket(m, depth(i, m));
+        assert IsAdmissible(m, depth(i, m), e);
+        assert SeqToSet(e) == bucket(m, depth(i, m));
+        assert i in SeqToSet(e);
+        assert i in e;
+
+        var p :| 0 <= p < |e| && e[p] == i;
+        p
+    }
 
 
 
@@ -90,12 +107,61 @@ module Multisegment{
 
 
 
-    lemma {:axiom} IVeeRange(m : Multisegment, i : int) 
+    lemma AdmissibleNested(m : Multisegment, k : int, e : seq<int>, p : int, q : int)           //proves that every earlier segment in an admissible enumeration contains every later segment
+        requires |m| > 0 && 0 <= k <= d(m)
+        requires IsAdmissible(m, k, e)
+        requires 0 <= p <= q < |e|
+        ensures SegSubsetEq(m[e[p]], m[e[q]])
+        decreases q - p
+    {
+        if p == q {
+            assert SegSubsetEq(m[e[p]], m[e[p]]);
+        } else {
+            AdmissibleNested(m, k, e, p, q - 1);
+            assert SegSubsetEq(m[e[q - 1]], m[e[q]]);
+
+            assert m[e[p]].0 <= m[e[q - 1]].0;
+            assert m[e[q - 1]].0 <= m[e[q]].0;
+
+            assert m[e[q]].1 <= m[e[q - 1]].1;
+            assert m[e[q - 1]].1 <= m[e[p]].1;
+
+            assert SegSubsetEq(m[e[p]], m[e[q]]);
+        }
+    }
+
+
+    lemma IVeeRange(m : Multisegment, i : int)                  //proves that i^vee is a valid index and that [b(Delta_i), e(Delta_i^vee)] is a valid segment
         requires 0 <= i < |m| && 0 <= depth(i, m) <= d(m)
         ensures 0 <= IVee(m, i) < |m|
         ensures m[i].0 <= m[IVee(m, i)].1
+    {
+        var e := AdmissibleEnumeration(m, depth(i, m));
+        var p := Position(m, i);
 
+        assert IsAdmissible(m, depth(i, m), e);
+        assert 0 <= p < |e|;
+        assert e[p] == i;
+        assert |e| > 0;
 
+        if p == |e| - 1 {
+            AdmissibleNested(m, depth(i, m), e, 0, p);
+
+            assert SegSubsetEq(m[e[0]], m[e[p]]);
+            assert m[e[p]].0 <= m[e[p]].1;
+            assert m[e[p]].1 <= m[e[0]].1;
+            assert m[i].0 <= m[e[0]].1;
+            assert IVee(m, i) == e[0];
+        } else {
+            assert 0 <= p + 1 < |e|;
+            assert SegSubsetEq(m[e[p]], m[e[p + 1]]);
+
+            assert m[e[p]].0 <= m[e[p + 1]].0;
+            assert m[e[p + 1]].0 <= m[e[p + 1]].1;
+            assert m[i].0 <= m[e[p + 1]].1;
+            assert IVee(m, i) == e[p + 1];
+        }
+    }
 
     ghost function TransformedSegment(m : Multisegment, i : int): Segment
         requires 0 <= i < |m| && 0 <= depth(i, m) <= d(m)
@@ -105,10 +171,34 @@ module Multisegment{
     }
 
 
+    lemma {:axiom} LowerDepthExists(m : Multisegment, i : int, k : int)    //Lemma 2.1(1): every smaller depth below depth(i) is attained by a segment succeeding Δ_i
+        requires 0 <= i < |m| && 0 <= k < depth(i, m)
+        ensures exists j : int ::
+            0 <= j < |m| &&
+            Precedes(m[i], m[j]) &&
+            depth(j, m) == k
 
-    lemma {:axiom} DepthExists(m : Multisegment, k : int)
+
+    lemma MaxDepthExists(m : Multisegment)    //proves that some index of m has depth d(m)
+        requires |m| > 0
+        ensures exists i : int :: 0 <= i < |m| && depth(i, m) == d(m)
+
+
+
+    lemma DepthExists(m : Multisegment, k : int)    //proves that every depth k from 0 through d(m) is attained
         requires |m| > 0 && 0 <= k <= d(m)
         ensures exists i : int :: 0 <= i < |m| && depth(i, m) == k
+    {
+        MaxDepthExists(m);
+        var imax :| 0 <= imax < |m| && depth(imax, m) == d(m);
+
+        if k == d(m) {
+            assert 0 <= imax < |m| && depth(imax, m) == k;
+        } else {
+            assert k < depth(imax, m);
+            LowerDepthExists(m, imax, k);
+        }
+    }
 
 
 
@@ -151,8 +241,14 @@ module Multisegment{
     ghost function RemainingIndices(m : Multisegment): set<int>
         requires |m| > 0
     {
-        set k : int | 0 <= k < |m| && k !in DistinguishedIndices(m)
+        set i : int | 0 <= i < |m| && i !in DistinguishedIndices(m)
     }
+
+
+
+    lemma DepthRange(m : Multisegment, i : int)    //proves that the depth of every index lies between 0 and d(m)
+        requires 0 <= i < |m|
+        ensures 0 <= depth(i, m) <= d(m)
 
 
     ghost function HighestLadderFrom(m : Multisegment, i : int): Multisegment
@@ -161,6 +257,7 @@ module Multisegment{
     {
         if i == |m| then []
         else if i in DistinguishedIndices(m) then
+            DepthRange(m, i);
             [TransformedSegment(m, i)] + HighestLadderFrom(m, i + 1)
         else
             HighestLadderFrom(m, i + 1)
@@ -182,6 +279,7 @@ module Multisegment{
     {
         if i == |m| then []
         else if i in RemainingIndices(m) then
+            DepthRange(m, i);
             [TransformedSegment(m, i)] + DerivedMultisegmentFrom(m, i + 1)
         else
             DerivedMultisegmentFrom(m, i + 1)
@@ -189,20 +287,18 @@ module Multisegment{
 
 
 
-    ghost function DerivedMultisegment(m : Multisegment): Multisegment
+    ghost function DerivedMultisegment(m : Multisegment): Multisegment    //returns the derived multisegment m'
         requires |m| > 0
     {
         DerivedMultisegmentFrom(m, 0)
     }
 
 
-
-    ghost function K(m : Multisegment): seq<Multisegment>
+    ghost function K(m : Multisegment): (Multisegment, Multisegment)      //returns the single RSK step K(m) = (l(m), m')
         requires |m| > 0
-        {
-            [l(m), DerivedMultisegment(m)]
-        }
-
+    {
+        (l(m), DerivedMultisegment(m))
+    }
 
 
     ghost predicate IsFirstLeadingIndex(m : Multisegment, i : int)
@@ -214,10 +310,42 @@ module Multisegment{
 
 
 
-    ghost function {:axiom} FirstLeadingIndex(m : Multisegment): (i : int)
+    lemma FirstLeadingIndexExists(m : Multisegment)    //proves that a segment satisfying condition (3.1a) exists
+        requires |m| > 0
+        ensures exists i : int :: IsFirstLeadingIndex(m, i)
+    {
+        var best := 0;
+        var r := 1;
+
+        while r < |m|
+            invariant 1 <= r <= |m|
+            invariant 0 <= best < r
+            invariant forall q : int :: 0 <= q < r ==> m[best].0 <= m[q].0
+            invariant forall q : int ::
+                0 <= q < r && m[q].0 == m[best].0 ==> m[best].1 <= m[q].1
+            decreases |m| - r
+        {
+            if m[r].0 < m[best].0 ||
+            (m[r].0 == m[best].0 && m[r].1 < m[best].1)
+            {
+                best := r;
+            }
+
+            r := r + 1;
+        }
+
+        assert IsFirstLeadingIndex(m, best);
+    }
+
+
+    ghost function FirstLeadingIndex(m : Multisegment): (i : int)    //chooses an index i1 satisfying the paper's first-leading-index condition (3.1a)
         requires |m| > 0
         ensures IsFirstLeadingIndex(m, i)
-
+    {
+        FirstLeadingIndexExists(m);
+        var chosen :| IsFirstLeadingIndex(m, chosen);
+        chosen
+    }
 
 
     ghost function NextCandidates(m : Multisegment, current : int): set<int>
@@ -230,12 +358,54 @@ module Multisegment{
     }
 
 
+    lemma NextLeadingIndexExists(m : Multisegment, current : int)    //proves that a candidate with minimal ending exists
+        requires 0 <= current < |m|
+        requires NextCandidates(m, current) != {}
+        ensures exists next : int ::
+            next in NextCandidates(m, current)
+            && forall i : int ::
+                i in NextCandidates(m, current) ==> m[next].1 <= m[i].1
+    {
+        var best :| best in NextCandidates(m, current);
+        var r := 0;
 
-    ghost function {:axiom} NextLeadingIndex(m : Multisegment, current : int): (next : int)
+        while r < |m|
+            invariant 0 <= r <= |m|
+            invariant best in NextCandidates(m, current)
+            invariant forall q : int ::
+                q in NextCandidates(m, current) && 0 <= q < r ==>
+                    m[best].1 <= m[q].1
+            decreases |m| - r
+        {
+            if r in NextCandidates(m, current) && m[r].1 < m[best].1 {
+                best := r;
+            }
+            r := r + 1;
+        }
+
+        assert forall q : int ::
+            q in NextCandidates(m, current) ==> 0 <= q < |m|;
+
+        assert forall q : int ::
+            q in NextCandidates(m, current) ==> m[best].1 <= m[q].1;
+    }
+
+
+
+    ghost function NextLeadingIndex(m : Multisegment, current : int): (next : int)    //chooses an eligible next leading index with minimal ending
         requires 0 <= current < |m|
         requires NextCandidates(m, current) != {}
         ensures next in NextCandidates(m, current)
-        ensures forall i : int :: i in NextCandidates(m, current) ==> m[next].1 <= m[i].1
+        ensures forall i : int ::
+            i in NextCandidates(m, current) ==> m[next].1 <= m[i].1
+    {
+        NextLeadingIndexExists(m, current);
+        var next :|
+            next in NextCandidates(m, current)
+            && forall i : int ::
+                i in NextCandidates(m, current) ==> m[next].1 <= m[i].1;
+        next
+    }
 
 
 
@@ -326,6 +496,7 @@ module Multisegment{
     }
 
 
+
     lemma {:axiom} Corollary(m : Multisegment)
         requires |m| > 0
         requires |l(m)| > 0
@@ -333,7 +504,9 @@ module Multisegment{
         ensures
             |DerivedMultisegment(m)| > 0
             && |MCross(m)| > 0
-            && l(m) == l(MCross(m))
+            && multiset(l(m)) == multiset(l(MCross(m)))                 //using multiset operator because index-order is not unique
             && DeltaCircle(m) == DeltaCircle(DerivedMultisegment(m))
-            && DerivedMultisegment(MCross(m)) == MCross(DerivedMultisegment(m))
+            && multiset(DerivedMultisegment(MCross(m)))
+                == multiset(MCross(DerivedMultisegment(m)))
+                
 }

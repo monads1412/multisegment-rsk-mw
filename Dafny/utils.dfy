@@ -17,6 +17,18 @@ module Utils{
 
 
 
+    ghost function SetToSequence(s : set<int>): seq<int>
+        ensures forall x :: x in s <==> x in SetToSequence(s)
+        decreases |s|
+    {
+        if s == {} then
+            []
+        else
+            var x :| x in s;
+            [x] + SetToSequence(s - {x})
+    }
+
+
 
     /* non-ghost implementation of MaxOf -- function by method:
 

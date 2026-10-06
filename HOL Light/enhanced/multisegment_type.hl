@@ -1,0 +1,23 @@
+needs "HOL Light/enhanced/segments_enhanced.hl";;
+
+
+
+(* Every list of segments is a valid representation of a multisegment. *)
+let is_multisegment_rep = new_definition
+  `(is_multisegment_rep : segment list -> bool) xs <=> T`;;
+
+
+(*proves that the type is not impossible by providing a witness*)
+let MULTISEGMENT_EXISTS = prove
+  (`?xs:segment list. is_multisegment_rep xs`,
+   EXISTS_TAC `[]:segment list` THEN      (*this means that I supply the empty list [] as a witness*)
+   REWRITE_TAC[is_multisegment_rep]);;    (*after that I unfold the definition of is_multisegment_rep, which reduces the goal to T*)
+
+
+(*this part creates the actual type*)
+let multisegment_tybij =
+  new_type_definition
+    "multisegment"
+    ("mk_multisegment",       (* converts a segment-list representation into an abstract multisegment *)
+      "segments_of")          (* extracts the underlying segment-list representation of a multisegment *)
+    MULTISEGMENT_EXISTS;;

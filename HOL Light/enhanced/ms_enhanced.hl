@@ -1,112 +1,8 @@
-needs "HOL Light/enhanced/segments_enhanced.hl";;
+needs "HOL Light/enhanced/ms_dirty.hl";;
 needs "HOL Light/utils.hl";;
+needs "HOL Light/enhanced/segments_enhanced.hl";;
 
 
-(* Every list of segments is a valid representation of a multisegment. *)
-let is_multisegment_rep = new_definition
-  `(is_multisegment_rep : segment list -> bool) xs <=> T`;;
-
-
-let MULTISEGMENT_EXISTS = prove
-  (`?xs:segment list. is_multisegment_rep xs`,
-   EXISTS_TAC `[]:segment list` THEN
-   REWRITE_TAC[is_multisegment_rep]);;
-
-
-(* Abstract type of multisegments. *)
-let multisegment_tybij =
-  new_type_definition
-    "multisegment"
-    ("mk_multisegment","segments_of")
-    MULTISEGMENT_EXISTS;;
-
-
-(* Number of segments in a multisegment. *)
-let ms_length = new_definition
-  `(ms_length : multisegment -> num) ms =
-     LENGTH (segments_of ms)`;;
-
-
-(* Parse |ms| as ms_length ms. *)
-let ms_length_bar_parser input =
-  match input with
-  | Resword "|" :: Ident s :: Resword "|" :: rest ->
-      (Combp
-        (Varp("ms_length",dpty),
-         Varp(s,dpty)),
-       rest)
-  | _ -> raise Noparse;;
-
-
-(* Avoid duplicate installation if the file is reloaded. *)
-delete_parser "ms_length_bars";;
-
-install_parser
-  ("ms_length_bars", ms_length_bar_parser);;
-
-
-
-parse_as_infix("at_index",(20,"left"));;
-
-
-(* Indexing a list. *)
-let list_at_index = new_definition
-  `(list_at_index : A list -> num -> A) xs i =
-     EL i xs`;;
-
-
-(* Indexing a multisegment. *)
-let multisegment_at_index = new_definition
-  `(multisegment_at_index : multisegment -> num -> segment) ms i =
-     EL i (segments_of ms)`;;
-
-
-make_overloadable "at_index" `:A -> num -> B`;;
-
-overload_interface
-  ("at_index", `(list_at_index : A list -> num -> A)`);;
-
-overload_interface
-  ("at_index",
-   `(multisegment_at_index : multisegment -> num -> segment)`);;
-
-
-(* Parse x[i] as x at_index i. *)
-let square_index_parser input =
-  match input with
-  | Ident x :: Resword "[" :: rest ->
-      let i,rest' = parse_preterm rest in
-      (match rest' with
-       | Resword "]" :: tail ->
-           (Combp
-             (Combp(Varp("at_index",dpty),
-                    Varp(x,dpty)),
-              i),
-            tail)
-       | _ -> raise Noparse)
-  | _ -> raise Noparse;;
-
-
-delete_parser "square_index";;
-
-install_parser
-  ("square_index",square_index_parser);;
-
-
-let is_nonempty_multisegment = new_definition
-  `(is_nonempty_multisegment : multisegment -> bool) ms <=>
-     ~(segments_of ms = [])`;;
-
-
-let headOf = new_definition
-  `(headOf : num list -> num) c =
-     HD c`;;
-
-
-parse_as_infix("is_member_of",(12,"right"));;
-
-let is_member_of = new_definition
-  `(x is_member_of c <=> MEM x c)`;;
 
 (* Will have to introduce a lemma proving that the set is nonempty. *)
 let depth = new_definition
@@ -120,8 +16,7 @@ let depth = new_definition
               LENGTH c = dep + 1 /\
               headOf c = i /\
               (!k:num. k is_member_of c ==> k < |ms|) /\
-              (!p:num. p + 1 < LENGTH c ==>
-                   (ms[c[p]]) << (ms[c[p+1]]))
+              (!p:num. p + 1 < LENGTH c ==> (ms[c[p]]) << (ms[c[p+1]]))
         }))
     else NONE`;;
 
@@ -156,26 +51,8 @@ let admissible_enumeration = new_definition
               (!i:num. (i is_member_of e  ==> i < |ms|)) /\
               (!p:num. p + 1 < LENGTH e ==>  (ms[e[p]]) seg_subset_eq (ms[e[p+1]]))
             )
-        )                 
+        )
       else NONE
-    else NONE`;;
-
-
-
-(* Returns an admissible enumeration of i's depth bucket
-   together with i's position in it. *)
-let p_and_enumeration = new_definition
-  `(p_and_enumeration :
-      multisegment -> num -> ((num list)#num) option) ms i =
-    if is_nonempty_multisegment ms /\ i < |ms|
-    then
-      let k = @k:num. depth ms i = SOME k in
-      let e = @e:num list. admissible_enumeration ms k = SOME e in
-      SOME
-        (e,
-         @p:num.
-           p < LENGTH e /\
-           e[p] = i)
     else NONE`;;
 
 
@@ -184,9 +61,9 @@ let ivee = new_definition
   `(ivee : multisegment -> num -> num option) ms i =
     if is_nonempty_multisegment ms /\ i < |ms|
     then
-      let ep = @ep:(num list)#num. p_and_enumeration ms i = SOME ep in
-      let e = FST ep in
-      let p = SND ep in
+      let k = @k:num. depth ms i = SOME k in
+      let e = @e:num list. admissible_enumeration ms k = SOME e in
+      let p = position_in e i in
       SOME
         (if p + 1 < LENGTH e
          then e[p+1]

@@ -1,0 +1,99 @@
+needs "HOL Light/enhanced/segments_enhanced.hl";;
+needs "HOL Light/utils.hl";;
+needs "HOL Light/enhanced/multisegment_type.hl";;
+
+
+
+
+(* Number of segments in a multisegment. *)
+let ms_length = new_definition
+  `(ms_length : multisegment -> num) ms =
+     LENGTH (segments_of ms)`;;
+
+
+(* Parse |ms| as ms_length ms. *)
+let ms_length_bar_parser input =                              (* Defines a parser taking the remaining stream of lexical tokens as input. *)
+  match input with                                            (* Examines the tokens at the current position in the HOL term. *)
+  | Resword "|" :: Ident s :: Resword "|" :: rest ->          (* Matches exactly: | followed by an identifier s followed by |; rest is everything after it. *)
+      (Combp                                                  (* Constructs a preterm representing function application. *)
+        (Varp("ms_length",dpty),                               (* The function being applied is ms_length; dpty leaves its type to be inferred later. *)
+         Varp(s,dpty)),                                       (* The argument is the identifier between the bars, again with its type inferred later. *)
+       rest)                                                  (* Returns the constructed preterm together with the unconsumed tokens. *)
+  | _ -> raise Noparse;;                                      (* If the input is not of the form |identifier|, tells HOL that this parser does not apply. *)
+
+
+(* Avoid duplicate installation if the file is reloaded. *)
+delete_parser "ms_length_bars";;                               (* Removes any previously installed parser with this name. *)
+
+install_parser                                                (* Registers the parser so HOL tries it when parsing terms. *)
+  ("ms_length_bars", ms_length_bar_parser);;                  (* Gives the parser an internal name and associates it with the function above. *)
+
+
+
+parse_as_infix("at_index",(20,"left"));;                      (* Declares at_index as a left-associative infix operator with precedence 20. *)
+
+
+(* Indexing a list. *)
+let list_at_index = new_definition
+  `(list_at_index : A list -> num -> A) xs i =
+     EL i xs`;;
+
+
+(* Indexing a multisegment. *)
+let multisegment_at_index = new_definition
+  `(multisegment_at_index : multisegment -> num -> segment) ms i =
+     EL i (segments_of ms)`;;
+
+
+make_overloadable "at_index" `:A -> num -> B`;;               (* Allows the visible notation at_index to refer to different underlying functions depending on types. *)
+
+overload_interface                                            (* Adds the list-indexing interpretation of the overloaded notation. *)
+  ("at_index", `(list_at_index : A list -> num -> A)`);;      (* When the left argument is a list, at_index means list_at_index. *)
+
+overload_interface                                            (* Adds the multisegment-indexing interpretation of the same notation. *)
+  ("at_index",
+   `(multisegment_at_index : multisegment -> num -> segment)`);; (* When the left argument is a multisegment, at_index means multisegment_at_index. *)
+
+
+(* Parse x[i] as x at_index i. *)
+let square_index_parser input =                               (* Defines the custom parser responsible for square-bracket indexing. *)
+  match input with                                            (* Looks at the lexical tokens beginning at the current parsing position. *)
+  | Ident x :: Resword "[" :: rest ->                         (* Activates when an identifier x is immediately followed by [. *)
+      let i,rest' = parse_preterm rest in                     (* Parses everything after [ as a HOL preterm i, returning also the tokens still remaining. *)
+      (match rest' with                                       (* Checks what remains after parsing the index expression. *)
+       | Resword "]" :: tail ->                               (* Requires the next token to be ], and calls everything after it tail. *)
+           (Combp                                             (* Constructs the outer function application: (at_index x) i. *)
+             (Combp(Varp("at_index",dpty),                    (* First constructs the partial application at_index x. *)
+                    Varp(x,dpty)),                             (* x is the object being indexed; its type is inferred later. *)
+              i),                                             (* Applies the resulting function to the parsed index expression i. *)
+            tail)                                             (* Returns the completed preterm and all tokens following the closing ]. *)
+       | _ -> raise Noparse)                                  (* If no closing ] is found in the expected place, this parser does not apply. *)
+  | _ -> raise Noparse;;                                      (* If the input does not begin identifier[, this parser does not apply. *)
+
+
+delete_parser "square_index";;                                (* Removes any previously installed square_index parser, useful when reloading the file. *)
+
+install_parser                                                (* Registers the square-bracket parser with HOL Light. *)
+  ("square_index",square_index_parser);;                      (* Associates its internal parser name with the parsing function above. *)
+
+
+let is_nonempty_multisegment = new_definition
+  `(is_nonempty_multisegment : multisegment -> bool) ms <=>
+     ~(segments_of ms = [])`;;
+
+
+let headOf = new_definition
+  `(headOf : A list -> A) c =
+     HD c`;;
+
+
+parse_as_infix("is_member_of",(12,"right"));;                 (* Declares is_member_of as a right-associative infix relation with precedence 12. *)
+
+let is_member_of = new_definition
+  `(x is_member_of c <=> MEM x c)`;;
+
+
+(* Returns the position of x in xs. *)
+let position_in = new_definition
+  `(position_in : A list -> A -> num) xs x =
+     @p:num. p < LENGTH xs /\ xs[p] = x`;;

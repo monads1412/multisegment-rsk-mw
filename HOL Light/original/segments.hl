@@ -1,0 +1,56 @@
+let is_segment = new_definition
+  `(is_segment : (int#int) -> bool) s <=>
+     FST s <= SND s`;;
+
+
+let SEGMENT_EXISTS = prove
+  (`?s:int#int. is_segment s`,
+   EXISTS_TAC `(&0,&0):int#int` THEN
+   SIMP_TAC[is_segment] THEN
+   INT_ARITH_TAC);;
+
+
+let segment_tybij =
+  new_type_definition
+    "segment"
+    ("mk_segment","segment_pair")
+    SEGMENT_EXISTS;;
+
+
+let segment_begin = new_definition
+  `(segment_begin : segment -> int) s =
+     FST (segment_pair s)`;;
+
+
+let segment_end = new_definition
+  `(segment_end : segment -> int) s =
+     SND (segment_pair s)`;;
+
+
+let shift_left = new_definition
+  `(shift_left : segment -> segment) s =
+     mk_segment
+       (segment_begin s - &1,
+        segment_end s - &1)`;;
+
+
+let truncate_left = new_definition
+  `(truncate_left : segment -> segment option) s =
+     if segment_begin s < segment_end s
+     then SOME
+       (mk_segment
+         (segment_begin s + &1,
+          segment_end s))
+     else NONE`;;
+
+
+let precedes = new_definition
+  `(precedes : segment -> segment -> bool) s1 s2 <=>
+     segment_begin s1 < segment_begin s2 /\
+     segment_end s1 < segment_end s2`;;
+
+
+let seg_subset_eq = new_definition
+  `(seg_subset_eq : segment -> segment -> bool) s1 s2 <=>
+     segment_begin s1 <= segment_begin s2 /\
+     segment_end s2 <= segment_end s1`;;

@@ -90,25 +90,29 @@ Depth(M) ==
 
 
 
-Depth(M, i) ==
-    Max({
-        d \in 0..(Len(M) - 1) :
-            \E Chain \in [1..(d + 1) -> IndexSet(M)] :
-                /\ Chain[1] = i
-                /\ \A r \in 1..d :
-                    Precedes(
-                        Delta(M)[Chain[r]],
-                        Delta(M)[Chain[r + 1]]
-                    )
-    })
 
+Depth(M, i) ==
+    IF i \in IndexSet(M)
+    THEN
+        Max({
+            d \in 0..(Len(M) - 1) :
+                \E Chain \in [1..(d + 1) -> IndexSet(M)] :
+                    /\ Chain[1] = i
+                    /\ \A r \in 1..d :
+                        Precedes(
+                            M[Chain[r]],
+                            M[Chain[r + 1]]
+                        )
+        })
+    ELSE
+        "Undefined"
 
 
 
 d(M) ==
     \* returns the depth of the multisegment M
     IF M = <<>>
-    THEN 0
+    THEN "undefined"
     ELSE Max(Range(Depth(M)))
 
 \* --------------------

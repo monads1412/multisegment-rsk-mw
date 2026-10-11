@@ -88,6 +88,28 @@ Depth(M) ==
             })
         ]
 
+
+Depth(M, i) ==
+    LET
+        IsDepthChain(d, Chain) ==
+            /\ Chain[1] = i
+            /\ \A r \in 1..d :
+                Precedes(
+                    Delta(M)[Chain[r]],
+                    Delta(M)[Chain[r + 1]]
+                )
+
+        DepthCandidates ==
+            {
+                d \in 0..(Len(M) - 1) :
+                    \E Chain \in [1..(d + 1) -> IndexSet(M)] :
+                        IsDepthChain(d, Chain)
+            }
+    IN
+        Max(DepthCandidates)
+
+
+
 d(M) ==
     \* returns the depth of the multisegment M
     IF M = <<>>

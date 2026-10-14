@@ -10,7 +10,7 @@ let SEGMENT_EXISTS = prove
    INT_ARITH_TAC);;
 
 
-let segment_tybij =
+let segment =
   new_type_definition
     "segment"
     ("mk_segment","segment_pair")

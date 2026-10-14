@@ -1,6 +1,6 @@
 
-needs "HOL Light/original/segments.hl";;
-needs "HOL Light/utils.hl";;
+needs "HOL Light/original/segments.ml";;
+needs "HOL Light/utils.ml";;
 
 
 (* Will have to introduce a lemma proving that the set is nonempty. *)

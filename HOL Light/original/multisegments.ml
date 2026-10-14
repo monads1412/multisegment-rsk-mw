@@ -1,5 +1,5 @@
-needs "HOL Light/original/segments.hl";;
-needs "HOL Light/utils.hl";;
+needs "HOL Light/original/segments.ml";;
+needs "HOL Light/utils.ml";;
 
 
 (* Every list of segments is a valid representation of a multisegment. *)
@@ -151,3 +151,132 @@ let delta_prime = new_definition
           (segment_begin (segment_at ms i),
            segment_end (segment_at ms j)))
     else NONE`;;
+
+
+(* ================================================ *)
+(* 1. FIRST LEADING INDEX                           *)
+(* ================================================ *)
+
+(* An admissible first index has the smallest       *)
+(* segment beginning, and among those, the          *)
+(* smallest segment end.                            *)
+
+let MW_FIRST_CANDIDATE = new_definition
+  `MW_FIRST_CANDIDATE (ms:multisegment) (i:num) <=>
+     i < ms_length ms /\
+     (!j. j < ms_length ms
+          ==> segment_begin (segment_at ms i) <=
+              segment_begin (segment_at ms j)) /\
+     (!j. j < ms_length ms /\
+          segment_begin (segment_at ms j) =
+          segment_begin (segment_at ms i)
+          ==> segment_end (segment_at ms i) <=
+              segment_end (segment_at ms j))`;;
+
+
+let MW_FIRST = new_definition
+  `MW_FIRST (ms:multisegment) =
+     @i:num. MW_FIRST_CANDIDATE ms i`;;
+
+
+(* ================================================ *)
+(* 2. ELIGIBLE NEXT INDEX                           *)
+(* ================================================ *)
+
+(* j is eligible to follow i if:                    *)
+(* - both indices are valid;                        *)
+(* - the beginning increases by exactly one;        *)
+(* - the ending increases strictly.                 *)
+
+let MW_NEXT_ELIGIBLE = new_definition
+  `MW_NEXT_ELIGIBLE
+     (ms:multisegment) (i:num) (j:num) <=>
+     i < ms_length ms /\
+     j < ms_length ms /\
+     segment_begin (segment_at ms j) =
+       segment_begin (segment_at ms i) + &1 /\
+     segment_end (segment_at ms i) <
+       segment_end (segment_at ms j)`;;
+
+
+(* Of all eligible next indices, choose one whose   *)
+(* segment ending is minimal.                       *)
+
+let MW_NEXT_CANDIDATE = new_definition
+  `MW_NEXT_CANDIDATE
+     (ms:multisegment) (i:num) (j:num) <=>
+     MW_NEXT_ELIGIBLE ms i j /\
+     (!r. MW_NEXT_ELIGIBLE ms i r
+          ==> segment_end (segment_at ms j) <=
+              segment_end (segment_at ms r))`;;
+
+
+let MW_HAS_NEXT = new_definition
+  `MW_HAS_NEXT (ms:multisegment) (i:num) <=>
+     ?j. MW_NEXT_CANDIDATE ms i j`;;
+
+
+let MW_NEXT = new_definition
+  `MW_NEXT (ms:multisegment) (i:num) =
+     @j:num. MW_NEXT_CANDIDATE ms i j`;;
+
+
+(* ================================================ *)
+(* 3. RECURSIVE MW WALK                              *)
+(* ================================================ *)
+
+(* Construct the sequence of leading indices.      *)
+(* The parameter fuel bounds recursive transitions. *)
+
+let MW_WALK = define
+  `(MW_WALK (ms:multisegment) (i:num) 0 = [i]) /\
+   (MW_WALK ms i (SUC fuel) =
+      if MW_HAS_NEXT ms i
+      then CONS i
+        (MW_WALK ms (MW_NEXT ms i) fuel)
+      else [i])`;;
+
+
+(* ================================================ *)
+(* 4. COMPLETE LEADING-INDEX SEQUENCE               *)
+(* ================================================ *)
+
+(* Starting at MW_FIRST, at most ms_length ms - 1   *)
+(* transitions are needed for a nonempty ms.        *)
+
+let MW_LEADING_INDICES = new_definition
+  `MW_LEADING_INDICES (ms:multisegment) =
+     if is_nonempty_multisegment ms
+     then MW_WALK ms (MW_FIRST ms)
+             (ms_length ms - 1)
+     else []`;;
+
+
+(* ================================================ *)
+(* 5. LEADING-INDEX SET I*                          *)
+(* ================================================ *)
+
+let MW_LEADING_SET = new_definition
+  `MW_LEADING_SET (ms:multisegment) =
+     {i:num | MEM i (MW_LEADING_INDICES ms)}`;;
+
+
+(* ================================================ *)
+(* 6. THE SEGMENT DELTA-CIRCLE                      *)
+(* ================================================ *)
+
+(* Delta-circle(ms) =                            *)
+(* [min(ms), min(ms) + k - 1],                    *)
+(* where k is the number of leading indices.     *)
+
+let MW_DELTA = new_definition
+  `MW_DELTA (ms:multisegment) =
+     if is_nonempty_multisegment ms
+     then SOME
+       (mk_segment
+         (segment_begin
+            (segment_at ms (MW_FIRST ms)),
+          segment_begin
+            (segment_at ms (MW_FIRST ms)) +
+              &(LENGTH (MW_LEADING_INDICES ms) - 1)))
+     else NONE`;;

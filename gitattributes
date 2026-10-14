@@ -1,0 +1,4 @@
+*.ml linguist-language=OCaml
+*.hl linguist-language=OCaml
+
+HOL Light/original/ms_as_list.ml linguist-language=OCaml

@@ -3,6 +3,14 @@ needs "HOL Light/original/segments.ml";;
 needs "HOL Light/utils.ml";;
 
 
+let ms_eq = new_definition
+  `(ms_eq : segment list -> segment list -> bool) ms1 ms2 <=>
+     !s:segment.
+       LENGTH (FILTER (\t. t = s) ms1) =
+       LENGTH (FILTER (\t. t = s) ms2)`;;
+
+
+
 (* Will have to introduce a lemma proving that the set is nonempty. *)
 let depth = new_definition
   `(depth : segment list -> num -> num option) ms i =
@@ -272,6 +280,59 @@ let MW_DAGGER = new_definition
            (\i. DELTA_STAR ms i)
            (LENGTH ms)))`;;
 
+
+
+let l = new_definition
+  `(l : segment list -> segment list) ms =
+     if ms = [] then []
+     else
+       let dm = @k:num. d ms = SOME k in
+       list_of_seq
+         (\k:num.
+            let e = @e:num list.
+              admissible_enumeration ms k = SOME e
+            in
+            let i = LAST e in
+            @s:segment. delta_prime ms i = SOME s)
+         (dm + 1)`;;
+
+
+let m_prime = new_definition
+  `(m_prime : segment list -> segment list) ms =
+     MAP
+       (\i:num.
+          @s:segment. delta_prime ms i = SOME s)
+       (FILTER
+         (\i:num.
+            ?e:num list. ?p:num.
+              p_and_enumeration ms i = SOME (e,p) /\
+              p + 1 < LENGTH e)
+         (list_of_seq (\i:num. i) (LENGTH ms)))`;;
+
+
+let ms_min = new_definition
+  `(ms_min : segment list -> int) ms =
+     if ms = [] then &0
+     else
+       @a:int.
+         (?i:num.
+            i < LENGTH ms /\
+            a = segment_begin (EL i ms)) /\
+         (!j:num.
+            j < LENGTH ms
+            ==> a <= segment_begin (EL j ms))`;;
+
+
+
+let COROLLARY =
+  `!ms:segment list.
+     ~(ms = []) /\
+     ms_min ms < ms_min (l ms)
+     ==>
+       ms_eq (l ms) (l (MW_DAGGER ms)) /\
+       DELTA_circle ms = DELTA_circle (m_prime ms) /\
+       ms_eq (m_prime (MW_DAGGER ms))
+             (MW_DAGGER (m_prime ms))`;;
 
 
 
